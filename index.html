@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>귀여운 공룡 색칠놀이 AI 검수 시스템</title>
+    <title>귀여운 공룡 색칠놀이 AI</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
@@ -66,7 +66,7 @@
 
         <div class="w-full max-w-xs z-10 mb-4">
             <button id="startGameBtn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white text-xl sm:text-2xl font-black rounded-3xl shadow-xl border-4 border-yellow-300 flex items-center justify-center gap-3 animate-pulse">
-                <i class="fa-solid fa-play text-yellow-300"></i> <span id="startBtnText">검수 게임 시작하기 🚀</span>
+                <i class="fa-solid fa-play text-yellow-300"></i> <span id="startBtnText">게임 시작하기 🚀</span>
             </button>
         </div>
     </div>
@@ -79,7 +79,7 @@
                     <i class="fa-solid fa-house text-sm"></i>
                 </button>
                 <h1 class="text-lg sm:text-xl font-bold flex items-center gap-1.5">
-                    <i class="fa-solid fa-dragon text-yellow-300"></i> <span id="appHeaderTitle">공룡 색칠 검수소</span>
+                    <i class="fa-solid fa-dragon text-yellow-300"></i> <span id="appHeaderTitle">귀여운 공룡 색칠놀이</span>
                 </h1>
             </div>
             <div class="flex items-center gap-2">
@@ -162,7 +162,6 @@
             <span id="praiseBadge" class="inline-block bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-0.5">🔍 AI 검수 완료!</span>
             <h3 id="scoreValue" class="text-3xl font-extrabold text-slate-800">100점</h3>
             
-            <!-- Inspection Report Box -->
             <div class="w-full bg-emerald-50 p-3 rounded-2xl border border-emerald-200 text-left flex flex-col gap-1 text-xs">
                 <div class="font-bold text-emerald-800 border-b border-emerald-200 pb-1 mb-1 flex items-center gap-1">
                     <i class="fa-solid fa-clipboard-check"></i> 정밀 검수 리포트
@@ -207,7 +206,7 @@
         </div>
     </div>
 
-    <footer class="text-center py-2 text-xs text-amber-700 font-medium">© 2026 AI 공룡 색칠 검수소 • 아이용 미니 앱</footer>
+    <footer class="text-center py-2 text-xs text-amber-700 font-medium">© 2026 귀여운 공룡 색칠놀이 AI • 아이용 미니 앱</footer>
 
     <script>
         const COLORS = ['#ff4757', '#ffa502', '#eccc68', '#2ed573', '#1e90ff', '#70a1ff', '#5352ed', '#a4b0be', '#ff78ae', '#9b59b6', '#8e44ad', '#1abc9c', '#d35400', '#2c3e50', '#ffffff'];
@@ -216,14 +215,14 @@
 
         const TRANSLATIONS = {
             ko: {
-                title: "공룡 색칠 검수소", homeTitle: "공룡 색칠 검수소 🎨", homeSub: "터치해서 예쁘게 칠하고 AI 검수를 받아보세요!", startBtn: "검수 게임 시작하기 🚀",
+                title: "귀여운 공룡 색칠놀이", homeTitle: "귀여운 공룡 색칠놀이 🎨", homeSub: "터치해서 예쁘게 칠하고 AI 검수를 받아보세요!", startBtn: "게임 시작하기 🚀",
                 bgmOn: "음악 켜짐", bgmOff: "음악 꺼짐", brush: "쓱쓱 붓", eraser: "지우개", reset: "다시하기", finish: "AI 그림 검수",
                 brushSize: "붓 두께:", customColor: "원하는 색 직접 고르기:", prev: "이전", next: "다음", statusDefault: "색칠을 마친 후 'AI 그림 검수' 버튼을 누르세요! 🐣",
-                retryBtn: "다시 칠하기", nextDinoBtn: "다음 공룡 검수 ➔", 
+                retryBtn: "다시 칠하기", nextDinoBtn: "다음 공룡 보기 ➔", 
                 dinoNames: ["1. 티라노사우루스", "2. 트리케라톱스", "3. 브라키오사우루스", "4. 벨로키라프토르", "5. 스테고사우루스", "6. 앙킬로사우루스", "7. 프테라노돈", "8. 파라사우롤로푸스", "9. 스피노사우루스", "10. 아기 공룡알"]
             },
             en: {
-                title: "Dino Coloring Inspection", homeTitle: "Dino Coloring Inspection 🎨", homeSub: "Color nicely and get AI inspection!", startBtn: "Start Inspection 🚀",
+                title: "Cute Dino Coloring", homeTitle: "Cute Dino Coloring 🎨", homeSub: "Color nicely and get AI inspection!", startBtn: "Start Game 🚀",
                 bgmOn: "BGM On", bgmOff: "BGM Off", brush: "Brush", eraser: "Eraser", reset: "Reset", finish: "AI Inspect",
                 brushSize: "Brush Size:", customColor: "Pick Color:", prev: "Prev", next: "Next", statusDefault: "Tap 'AI Inspect' after coloring! 🐣",
                 retryBtn: "Color Again", nextDinoBtn: "Next Dino ➔",
@@ -463,7 +462,6 @@
             }
         }
 
-        // --- AI 정밀 검수 시스템 로직 ---
         function triggerAIInspection() {
             aiOverlay.style.opacity = '1';
             setTimeout(() => {
@@ -574,7 +572,7 @@
             tCtx.drawImage(outlineCanvas, 0, 0);
 
             const link = document.createElement('a');
-            link.download = 'dino_inspection_result.png';
+            link.download = 'dino_coloring_result.png';
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
         }
