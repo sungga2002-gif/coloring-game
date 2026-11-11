@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>귀여운 공룡 색칠놀이 AI</title>
+    <title>귀여운 공룡 색칠놀이 AI 검수 시스템</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Canvas Confetti Library for Score Animations -->
+    <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Google Fonts (Jua / Noto Sans KR) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -26,42 +26,12 @@
             transform: scale(1.2);
             box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
-
         @keyframes dinoAlive {
-            0% { transform: scale(1) translateY(0) rotate(0deg) rotateY(0deg); filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
-            25% { transform: scale(1.08) translateY(-12px) rotate(-3deg) rotateY(10deg); filter: drop-shadow(0 20px 25px rgba(255, 215, 0, 0.6)); }
-            50% { transform: scale(1.05) translateY(-5px) rotate(2deg) rotateY(-8deg); filter: drop-shadow(0 15px 20px rgba(255, 105, 180, 0.6)); }
-            75% { transform: scale(1.09) translateY(-15px) rotate(-2deg) rotateY(8deg); filter: drop-shadow(0 22px 30px rgba(0, 230, 255, 0.6)); }
-            100% { transform: scale(1) translateY(0) rotate(0deg) rotateY(0deg); filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
+            0% { transform: scale(1) translateY(0) rotate(0deg); }
+            50% { transform: scale(1.08) translateY(-12px) rotate(-3deg); }
+            100% { transform: scale(1) translateY(0) rotate(0deg); }
         }
-        
-        .dino-alive-anim {
-            animation: dinoAlive 3s ease-in-out infinite;
-            transform-style: preserve-3d;
-            perspective: 800px;
-        }
-
-        @keyframes dinoDance {
-            0%, 100% { transform: scale(1) rotate(0deg) translateY(0); }
-            20% { transform: scale(1.1) rotate(-15deg) translateY(-15px); }
-            40% { transform: scale(0.95) rotate(15deg) translateY(5px); }
-            60% { transform: scale(1.1) rotate(-10deg) translateY(-20px); }
-            80% { transform: scale(1.05) rotate(10deg) translateY(-5px); }
-        }
-        @keyframes dinoSpin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.15) translateY(-10px); }
-            100% { transform: rotate(360deg) scale(1); }
-        }
-        @keyframes dinoBurp {
-            0%, 100% { transform: scale(1); }
-            30% { transform: scale(1.25, 0.8) translateY(10px); }
-            60% { transform: scale(0.85, 1.2) translateY(-15px); }
-        }
-
-        .dino-dance-anim { animation: dinoDance 1.2s infinite ease-in-out; }
-        .dino-spin-anim { animation: dinoSpin 1.5s infinite linear; }
-        .dino-burp-anim { animation: dinoBurp 1s infinite ease-in-out; }
+        .dino-alive-anim { animation: dinoAlive 3s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-amber-50 text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden">
@@ -69,34 +39,34 @@
     <!-- START / HOME SCREEN -->
     <div id="homeScreen" class="fixed inset-0 bg-gradient-to-b from-sky-300 via-amber-100 to-emerald-200 z-50 flex flex-col items-center justify-between p-6 transition-opacity duration-700 cursor-pointer">
         <div class="w-full max-w-md flex justify-between items-center z-10">
-            <button id="homeLangBtn" class="bg-white/80 hover:bg-white text-emerald-800 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5 transition active:scale-95">
+            <button id="homeLangBtn" class="bg-white/80 hover:bg-white text-emerald-800 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5">
                 <span id="homeLangFlag">🇰🇷</span> <span id="homeLangText">한국어</span>
             </button>
             <div class="flex gap-2">
-                <button id="openRankingHomeBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5 transition active:scale-95">
+                <button id="openRankingHomeBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5">
                     <i class="fa-solid fa-trophy"></i> 랭킹
                 </button>
-                <button id="bgmToggleBtn" class="bg-white/80 hover:bg-white text-amber-700 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5 transition active:scale-95">
+                <button id="bgmToggleBtn" class="bg-white/80 hover:bg-white text-amber-700 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5">
                     <i id="bgmIcon" class="fa-solid fa-music text-emerald-600"></i> <span id="bgmLabel">음악 켜짐</span>
                 </button>
             </div>
         </div>
 
         <div class="text-center z-10 my-auto">
-            <div class="inline-block bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-lg border-2 border-yellow-300 mb-3 animate-bounce">
-                <span class="text-xs sm:text-sm font-extrabold text-amber-600 tracking-wider">알록달록 AI 공룡 월드</span>
+            <div class="inline-block bg-white/95 px-6 py-3 rounded-full shadow-lg border-2 border-yellow-300 mb-3 animate-bounce">
+                <span class="text-xs sm:text-sm font-extrabold text-amber-600">✨ AI 정밀 그림 검수 시스템 탑재</span>
             </div>
-            <h1 id="homeTitle" class="text-3xl sm:text-5xl font-black text-emerald-700 drop-shadow-md tracking-wide leading-tight">
+            <h1 id="homeTitle" class="text-3xl sm:text-5xl font-black text-emerald-700 drop-shadow-md leading-tight">
                 귀여운 공룡 색칠놀이 🎨
             </h1>
             <p id="homeSubtitle" class="text-slate-600 text-sm sm:text-base font-bold mt-2">
-                터치해서 공룡 친구들을 만나러 가요!
+                터치해서 예쁘게 칠하고 AI 검수를 받아보세요!
             </p>
         </div>
 
         <div class="w-full max-w-xs z-10 mb-4">
-            <button id="startGameBtn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xl sm:text-2xl font-black rounded-3xl shadow-xl border-4 border-yellow-300 transform active:scale-95 transition flex items-center justify-center gap-3 animate-pulse">
-                <i class="fa-solid fa-play text-yellow-300"></i> <span id="startBtnText">게임 시작하기 🎨</span>
+            <button id="startGameBtn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white text-xl sm:text-2xl font-black rounded-3xl shadow-xl border-4 border-yellow-300 flex items-center justify-center gap-3 animate-pulse">
+                <i class="fa-solid fa-play text-yellow-300"></i> <span id="startBtnText">검수 게임 시작하기 🚀</span>
             </button>
         </div>
     </div>
@@ -105,18 +75,18 @@
     <header class="bg-emerald-500 text-white shadow-md p-3 sm:p-4 text-center sticky top-0 z-20 rounded-b-2xl">
         <div class="max-w-md mx-auto flex justify-between items-center px-2">
             <div class="flex items-center gap-2">
-                <button id="mainHomeBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white w-9 h-9 rounded-full border border-emerald-400 flex items-center justify-center shadow-sm active:scale-95 transition" title="홈으로">
+                <button id="mainHomeBtn" class="bg-emerald-600 text-white w-9 h-9 rounded-full border border-emerald-400 flex items-center justify-center shadow-sm" title="홈으로">
                     <i class="fa-solid fa-house text-sm"></i>
                 </button>
-                <h1 class="text-lg sm:text-2xl font-bold flex items-center gap-1.5 tracking-wide">
-                    <i class="fa-solid fa-dragon text-yellow-300"></i> <span id="appHeaderTitle">귀여운 공룡 색칠놀이</span>
+                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-1.5">
+                    <i class="fa-solid fa-dragon text-yellow-300"></i> <span id="appHeaderTitle">공룡 색칠 검수소</span>
                 </h1>
             </div>
             <div class="flex items-center gap-2">
-                <button id="openRankingHeaderBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-xs sm:text-sm px-2.5 py-1.5 rounded-full font-bold shadow-sm transition active:scale-95 flex items-center gap-1">
+                <button id="openRankingHeaderBtn" class="bg-yellow-400 text-yellow-900 text-xs px-2.5 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
                     <i class="fa-solid fa-trophy"></i> 랭킹
                 </button>
-                <button id="langToggleBtn" class="bg-emerald-600 hover:bg-emerald-700 text-xs sm:text-sm px-3 py-1.5 rounded-full border border-emerald-400 text-yellow-200 font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
+                <button id="langToggleBtn" class="bg-emerald-600 text-xs px-3 py-1.5 rounded-full border border-emerald-400 text-yellow-200 font-bold flex items-center gap-1">
                     <span id="langFlag">🇰🇷</span> <span id="langLabel">한국어</span>
                 </button>
             </div>
@@ -126,13 +96,13 @@
     <!-- Main Workspace -->
     <main class="flex-1 max-w-md w-full mx-auto p-3 sm:p-4 flex flex-col justify-center items-center gap-3">
         <div class="w-full flex justify-between items-center bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-amber-200">
-            <button id="prevBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm transition active:scale-95 flex items-center gap-1">
+            <button id="prevBtn" class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm flex items-center gap-1">
                 <i class="fa-solid fa-chevron-left"></i> <span id="prevBtnText">이전</span>
             </button>
             <div class="text-center">
                 <span id="dinoName" class="text-base sm:text-lg font-bold text-emerald-700">1. 티라노사우루스</span>
             </div>
-            <button id="nextBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm transition active:scale-95 flex items-center gap-1">
+            <button id="nextBtn" class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm flex items-center gap-1">
                 <span id="nextBtnText">다음</span> <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
@@ -140,33 +110,33 @@
         <div id="canvasContainer" class="relative w-full aspect-square bg-white rounded-3xl shadow-lg border-4 border-amber-300 overflow-hidden flex items-center justify-center">
             <canvas id="colorCanvas" class="absolute inset-0 w-full h-full cursor-crosshair touch-none"></canvas>
             <canvas id="outlineCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
-            <div id="aiOverlay" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-700 bg-gradient-to-tr from-yellow-200/20 via-pink-200/20 to-cyan-200/20 flex items-center justify-center overflow-hidden z-10">
-                <div class="text-yellow-400 text-4xl animate-bounce">✨</div>
+            <div id="aiOverlay" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-700 bg-gradient-to-tr from-yellow-200/20 via-pink-200/20 to-cyan-200/20 flex items-center justify-center z-10">
+                <div class="text-yellow-400 text-4xl animate-bounce">🔍 AI 정밀 검수 중...</div>
             </div>
             <div id="canvasLoader" class="absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-2 hidden z-20">
                 <div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                <span id="loaderText" class="text-sm font-bold text-emerald-700">공룡 그리는 중...</span>
+                <span id="loaderText" class="text-sm font-bold text-emerald-700">공룡 불러오는 중...</span>
             </div>
         </div>
 
         <div id="voiceFeedbackBadge" class="w-full bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-2 border border-amber-300">
-            <i class="fa-solid fa-volume-high text-emerald-600 animate-pulse"></i>
-            <span id="voiceStatusText">선 안쪽에 예쁘게 칠해보세요! 🐣</span>
+            <i class="fa-solid fa-robot text-emerald-600 animate-pulse"></i>
+            <span id="voiceStatusText">색칠을 마친 후 'AI 그림 검수' 버튼을 누르세요! 🐣</span>
         </div>
 
         <div class="w-full bg-white p-2.5 rounded-2xl shadow-sm border border-amber-200 flex flex-col gap-2 text-xs sm:text-sm">
             <div class="flex justify-around items-center gap-1">
-                <button id="toolBrush" class="tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-emerald-500 text-white shadow-md">
+                <button id="toolBrush" class="tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-emerald-500 text-white shadow-md">
                     <i class="fa-solid fa-paintbrush text-base"></i> <span id="btnBrushText">쓱쓱 붓</span>
                 </button>
-                <button id="toolEraser" class="tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-slate-100 text-slate-700 hover:bg-slate-200">
+                <button id="toolEraser" class="tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-slate-100 text-slate-700">
                     <i class="fa-solid fa-eraser text-base text-pink-500"></i> <span id="btnEraserText">지우개</span>
                 </button>
-                <button id="resetBtn" class="flex-1 py-2 rounded-xl font-bold text-slate-700 bg-slate-100 hover:bg-rose-100 hover:text-rose-600 flex flex-col items-center gap-1 transition active:scale-95">
+                <button id="resetBtn" class="flex-1 py-2 rounded-xl font-bold text-slate-700 bg-slate-100 flex flex-col items-center gap-1">
                     <i class="fa-solid fa-rotate-left text-base text-amber-600"></i> <span id="btnResetText">다시하기</span>
                 </button>
-                <button id="finishBtn" class="flex-1 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 flex flex-col items-center gap-1 shadow-md transition active:scale-95 animate-pulse">
-                    <i class="fa-solid fa-wand-magic-sparkles text-base text-yellow-200"></i> <span id="btnFinishText">AI 완료</span>
+                <button id="finishBtn" class="flex-1 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-amber-400 to-orange-500 flex flex-col items-center gap-1 shadow-md animate-pulse">
+                    <i class="fa-solid fa-magnifying-glass-chart text-base text-yellow-200"></i> <span id="btnFinishText">AI 그림 검수</span>
                 </button>
             </div>
             <div class="flex items-center gap-3 px-2 pt-1 border-t border-slate-100">
@@ -185,49 +155,59 @@
         </div>
     </main>
 
-    <!-- Score Modal -->
+    <!-- Inspection / Score Modal -->
     <div id="scoreModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
         <div id="scoreModalCard" class="bg-white rounded-3xl p-5 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col items-center gap-2.5 max-h-[90vh] overflow-y-auto">
-            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center text-3xl mb-0.5 shadow-inner text-yellow-500" id="modalEmoji">🏆</div>
-            <span id="praiseBadge" class="inline-block bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-0.5">🌟 참 잘했어요!</span>
-            <h3 id="scoreValue" class="text-3xl font-extrabold text-slate-800">120점</h3>
-            <p id="praiseMessage" class="text-slate-600 text-xs font-semibold leading-relaxed px-1">"바탕과 멋진 창의적 그림까지 완벽해요!"</p>
+            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center text-3xl mb-0.5 shadow-inner text-yellow-500" id="modalEmoji">📋</div>
+            <span id="praiseBadge" class="inline-block bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-0.5">🔍 AI 검수 완료!</span>
+            <h3 id="scoreValue" class="text-3xl font-extrabold text-slate-800">100점</h3>
+            
+            <!-- Inspection Report Box -->
+            <div class="w-full bg-emerald-50 p-3 rounded-2xl border border-emerald-200 text-left flex flex-col gap-1 text-xs">
+                <div class="font-bold text-emerald-800 border-b border-emerald-200 pb-1 mb-1 flex items-center gap-1">
+                    <i class="fa-solid fa-clipboard-check"></i> 정밀 검수 리포트
+                </div>
+                <div id="inspectionDetails" class="text-slate-700 font-semibold leading-relaxed">
+                    • 채색 완성도: 우수함<br>
+                    • 선 벗어남 방지: 완벽<br>
+                    • 창의적 색상 조화: 매우 훌륭함
+                </div>
+            </div>
+
+            <p id="praiseMessage" class="text-slate-600 text-xs font-semibold leading-relaxed px-1">"AI 검수관: 공룡의 디테일까지 아주 예쁘게 잘 칠해주었어요!"</p>
             
             <div id="rankingInputContainer" class="w-full bg-amber-50 p-2.5 rounded-2xl border border-amber-200 flex flex-col gap-1.5">
-                <span class="text-xs font-bold text-amber-800">🏆 랭킹에 이름을 남겨보세요!</span>
+                <span class="text-xs font-bold text-amber-800">🏆 검수 통과! 랭킹에 등록해보세요</span>
                 <div class="flex gap-2">
                     <input type="text" id="playerNameInput" placeholder="이름 (예: 꼬마 화가)" maxlength="10" class="flex-1 px-3 py-1.5 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                    <button id="saveRankingBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition shadow-sm">등록</button>
+                    <button id="saveRankingBtn" class="bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow-sm">등록</button>
                 </div>
             </div>
 
             <div class="w-full flex flex-col gap-1.5">
-                <button id="downloadImgBtn" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-download"></i> 내 그림 이미지로 저장하기
-                </button>
-                <button id="shareXBtn" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
-                    <i class="fa-brands fa-x-twitter"></i> X(트위터)로 자랑하기
+                <button id="downloadImgBtn" class="w-full py-2 bg-sky-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-download"></i> 검수된 그림 저장하기
                 </button>
             </div>
 
             <div class="w-full flex gap-2 mt-1">
-                <button id="modalCloseBtn" class="flex-1 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">다시 칠하기</button>
-                <button id="modalNextBtn" class="flex-1 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs shadow-md transition">다음 공룡 보기 ➔</button>
+                <button id="modalCloseBtn" class="flex-1 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs">다시 칠하기</button>
+                <button id="modalNextBtn" class="flex-1 py-2 bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md">다음 공룡 검수 ➔</button>
             </div>
         </div>
     </div>
 
-    <!-- Ranking Board Modal -->
+    <!-- Ranking Modal -->
     <div id="rankingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
         <div id="rankingModalCard" class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col items-center gap-3">
             <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center text-2xl shadow-inner text-yellow-500">👑</div>
             <h3 class="text-xl font-extrabold text-slate-800">명예의 전당 랭킹 (Top 10)</h3>
             <div id="rankingListContainer" class="w-full max-h-60 overflow-y-auto flex flex-col gap-1.5 text-left text-xs font-semibold text-slate-700 pr-1"></div>
-            <button id="closeRankingBtn" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md transition mt-1">닫기</button>
+            <button id="closeRankingBtn" class="w-full py-2.5 bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-md mt-1">닫기</button>
         </div>
     </div>
 
-    <footer class="text-center py-2 text-xs text-amber-700 font-medium">© 2026 귀여운 공룡 색칠놀이 AI • 아이용 미니 앱</footer>
+    <footer class="text-center py-2 text-xs text-amber-700 font-medium">© 2026 AI 공룡 색칠 검수소 • 아이용 미니 앱</footer>
 
     <script>
         const COLORS = ['#ff4757', '#ffa502', '#eccc68', '#2ed573', '#1e90ff', '#70a1ff', '#5352ed', '#a4b0be', '#ff78ae', '#9b59b6', '#8e44ad', '#1abc9c', '#d35400', '#2c3e50', '#ffffff'];
@@ -236,24 +216,22 @@
 
         const TRANSLATIONS = {
             ko: {
-                title: "귀여운 공룡 색칠놀이", homeTitle: "귀여운 공룡 색칠놀이 🎨", homeSub: "터치해서 공룡 친구들을 만나러 가요!", startBtn: "게임 시작하기 🎨",
-                bgmOn: "음악 켜짐", bgmOff: "음악 꺼짐", brush: "쓱쓱 붓", eraser: "지우개", reset: "다시하기", finish: "AI 완료",
-                brushSize: "붓 두께:", customColor: "원하는 색 직접 고르기:", prev: "이전", next: "다음", statusDefault: "선 안쪽에 예쁘게 칠해보세요! 🐣",
-                retryBtn: "다시 칠하기", nextDinoBtn: "다음 공룡 보기 ➔", praiseHigh: "🌟 최고의 창의력 걸작!", praiseLow: "💪 미완성 작품이에요!",
-                msgHigh: '"바탕 채색과 멋진 창의적 그림까지 완벽하게 완성했어요!"', msgLow: '"아직 덜 칠해진 곳이 많아요. 구석구석 완벽하게 채색해보세요!"',
-                dinoNames: ["1. 티라노사우루스 (불 뿜기 🔥)", "2. 트리케라톱스 (뿡뿡 방귀 💨)", "3. 브라키오사우루스 (콧구멍 후비기 👃)", "4. 벨로키라프토르 (K-POP 댄스 💃)", "5. 스테고사우루스 (꺼억~ 트림 🤢)", "6. 앙킬로사우루스 (회전 팽이 뱅뱅 🌀)", "7. 프테라노돈 (하늘 비행 댄스 ✈️)", "8. 파라사우롤로푸스 (트럼펫 연주 🎺)", "9. 스피노사우루스 (물대포 뿜기 💦)", "10. 아기 공룡알 (알 깨고 까꿍 댄스 🥚)"]
+                title: "공룡 색칠 검수소", homeTitle: "공룡 색칠 검수소 🎨", homeSub: "터치해서 예쁘게 칠하고 AI 검수를 받아보세요!", startBtn: "검수 게임 시작하기 🚀",
+                bgmOn: "음악 켜짐", bgmOff: "음악 꺼짐", brush: "쓱쓱 붓", eraser: "지우개", reset: "다시하기", finish: "AI 그림 검수",
+                brushSize: "붓 두께:", customColor: "원하는 색 직접 고르기:", prev: "이전", next: "다음", statusDefault: "색칠을 마친 후 'AI 그림 검수' 버튼을 누르세요! 🐣",
+                retryBtn: "다시 칠하기", nextDinoBtn: "다음 공룡 검수 ➔", 
+                dinoNames: ["1. 티라노사우루스", "2. 트리케라톱스", "3. 브라키오사우루스", "4. 벨로키라프토르", "5. 스테고사우루스", "6. 앙킬로사우루스", "7. 프테라노돈", "8. 파라사우롤로푸스", "9. 스피노사우루스", "10. 아기 공룡알"]
             },
             en: {
-                title: "Cute Dino Coloring AI", homeTitle: "Cute Dino Coloring 🎨", homeSub: "Tap anywhere to meet dino friends!", startBtn: "Start Game 🎨",
-                bgmOn: "BGM On", bgmOff: "BGM Off", brush: "Brush", eraser: "Eraser", reset: "Reset", finish: "AI Finish",
-                brushSize: "Brush Size:", customColor: "Pick Custom Color:", prev: "Prev", next: "Next", statusDefault: "Color nicely inside lines! 🐣",
-                retryBtn: "Color Again", nextDinoBtn: "Next Dinosaur ➔", praiseHigh: "🌟 Masterpiece of Creativity!", praiseLow: "💪 Incomplete Work!",
-                msgHigh: '"You finished coloring the background and added creative drawings perfectly!"', msgLow: '"There are still many uncolored spots. Fill it up completely!"',
-                dinoNames: ["1. T-Rex (Fire Breath 🔥)", "2. Triceratops (Funny Fart 💨)", "3. Brachiosaurus (Nose Pick 👃)", "4. Velociraptor (Disco Dance 💃)", "5. Stegosaurus (Burp Sound 🤢)", "6. Ankylosaurus (Spin Top 🌀)", "7. Pteranodon (Sky Flight ✈️)", "8. Parasaurolophus (Trumpet 🎺)", "9. Spinosaurus (Water Cannon 💦)", "10. Baby Dino (Egg Peek-a-boo 🥚)"]
+                title: "Dino Coloring Inspection", homeTitle: "Dino Coloring Inspection 🎨", homeSub: "Color nicely and get AI inspection!", startBtn: "Start Inspection 🚀",
+                bgmOn: "BGM On", bgmOff: "BGM Off", brush: "Brush", eraser: "Eraser", reset: "Reset", finish: "AI Inspect",
+                brushSize: "Brush Size:", customColor: "Pick Color:", prev: "Prev", next: "Next", statusDefault: "Tap 'AI Inspect' after coloring! 🐣",
+                retryBtn: "Color Again", nextDinoBtn: "Next Dino ➔",
+                dinoNames: ["1. T-Rex", "2. Triceratops", "3. Brachiosaurus", "4. Velociraptor", "5. Stegosaurus", "6. Ankylosaurus", "7. Pteranodon", "8. Parasaurolophus", "9. Spinosaurus", "10. Baby Dino"]
             }
         };
 
-        const DINOSAURS = [{ action: "fire" }, { action: "fart" }, { action: "nosePick" }, { action: "dance" }, { action: "burp" }, { action: "spin" }, { action: "fly" }, { action: "trumpet" }, { action: "water" }, { action: "eggPop" }];
+        const DINOSAURS = [0,1,2,3,4,5,6,7,8,9];
 
         function getDinoSVG(index) {
             const eyePart = `<circle cx="215" cy="175" r="14" fill="none" stroke="black" stroke-width="4"/><circle cx="218" cy="172" r="5" fill="black"/>`;
@@ -279,30 +257,6 @@
             if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
-        function playDinoLaughter() {
-            initAudio();
-            const now = audioCtx.currentTime;
-            const laughNotes = [
-                { f: 587.33, d: 0.1 }, { f: 783.99, d: 0.1 }, 
-                { f: 523.25, d: 0.12 }, { f: 659.25, d: 0.12 }, 
-                { f: 880.00, d: 0.1 }, { f: 698.46, d: 0.1 }, { f: 987.77, d: 0.18 }
-            ];
-            let timeOffset = 0;
-            laughNotes.forEach((note, index) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = index % 2 === 0 ? 'sine' : 'triangle';
-                osc.frequency.setValueAtTime(note.f, now + timeOffset);
-                gain.gain.setValueAtTime(0.09, now + timeOffset);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + timeOffset + note.d);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now + timeOffset);
-                osc.stop(now + timeOffset + note.d);
-                timeOffset += note.d + 0.03;
-            });
-        }
-
         function playSparkleSound() {
             initAudio();
             const now = audioCtx.currentTime;
@@ -318,52 +272,6 @@
                 osc.start(now + i * 0.05);
                 osc.stop(now + i * 0.05 + 0.15);
             });
-        }
-
-        function playBGMNote(freq, duration = 0.25) {
-            if (!isBgmPlaying || !audioCtx) return;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
-        }
-
-        function startBGM() {
-            initAudio();
-            if (isBgmPlaying) return;
-            isBgmPlaying = true;
-            const melody = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 293.66, 349.23, 440.00, 523.25, 440.00, 349.23];
-            let noteIdx = 0;
-            bgmInterval = setInterval(() => {
-                playBGMNote(melody[noteIdx]);
-                noteIdx = (noteIdx + 1) % melody.length;
-            }, 300);
-            updateBgmUI();
-        }
-
-        function stopBGM() {
-            isBgmPlaying = false;
-            if (bgmInterval) clearInterval(bgmInterval);
-            updateBgmUI();
-        }
-
-        function updateBgmUI() {
-            const label = document.getElementById('bgmLabel');
-            const icon = document.getElementById('bgmIcon');
-            const t = TRANSLATIONS[currentLang];
-            if (isBgmPlaying) {
-                label.textContent = t.bgmOn;
-                icon.className = "fa-solid fa-music text-emerald-600";
-            } else {
-                label.textContent = t.bgmOff;
-                icon.className = "fa-solid fa-volume-xmark text-slate-400";
-            }
         }
 
         function setLanguage(lang) {
@@ -389,7 +297,6 @@
             document.getElementById('modalCloseBtn').textContent = t.retryBtn;
             document.getElementById('modalNextBtn').textContent = t.nextDinoBtn;
             document.getElementById('dinoName').textContent = t.dinoNames[currentDinoIndex];
-            updateBgmUI();
         }
 
         const colorCanvas = document.getElementById('colorCanvas');
@@ -397,7 +304,6 @@
         const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true });
         const outlineCtx = outlineCanvas.getContext('2d');
         const homeScreen = document.getElementById('homeScreen');
-        const canvasContainer = document.getElementById('canvasContainer');
         const aiOverlay = document.getElementById('aiOverlay');
         const canvasLoader = document.getElementById('canvasLoader');
         const scoreModal = document.getElementById('scoreModal');
@@ -414,10 +320,9 @@
             colorCanvas.addEventListener('pointerup', stopDrawing);
             colorCanvas.addEventListener('pointerleave', stopDrawing);
 
-            homeScreen.addEventListener('click', () => { startGame(); playDinoLaughter(); });
-            document.getElementById('startGameBtn').addEventListener('click', (e) => { e.stopPropagation(); startGame(); playDinoLaughter(); });
+            homeScreen.addEventListener('click', startGame);
+            document.getElementById('startGameBtn').addEventListener('click', (e) => { e.stopPropagation(); startGame(); });
             document.getElementById('mainHomeBtn').addEventListener('click', () => { homeScreen.style.opacity = '1'; homeScreen.style.pointerEvents = 'auto'; });
-            document.getElementById('bgmToggleBtn').addEventListener('click', (e) => { e.stopPropagation(); if (isBgmPlaying) stopBGM(); else startBGM(); });
             document.getElementById('homeLangBtn').addEventListener('click', (e) => { e.stopPropagation(); setLanguage(currentLang === 'ko' ? 'en' : 'ko'); });
             document.getElementById('langToggleBtn').addEventListener('click', () => setLanguage(currentLang === 'ko' ? 'en' : 'ko'));
 
@@ -428,7 +333,7 @@
             document.getElementById('toolBrush').addEventListener('click', () => { setMode('brush'); playSparkleSound(); });
             document.getElementById('toolEraser').addEventListener('click', () => { setMode('eraser'); playSparkleSound(); });
             document.getElementById('resetBtn').addEventListener('click', resetColoring);
-            document.getElementById('finishBtn').addEventListener('click', triggerAIPolishAndScore);
+            document.getElementById('finishBtn').addEventListener('click', triggerAIInspection);
 
             document.getElementById('brushSize').addEventListener('input', (e) => {
                 brushSize = parseInt(e.target.value, 10);
@@ -442,12 +347,10 @@
 
             document.getElementById('saveRankingBtn').addEventListener('click', saveCurrentScoreToRanking);
             document.getElementById('downloadImgBtn').addEventListener('click', downloadCanvasImage);
-            document.getElementById('shareXBtn').addEventListener('click', shareOnX);
 
             document.getElementById('customColor').addEventListener('input', (e) => {
                 currentColor = e.target.value;
                 setMode('brush');
-                highlightActiveColor(null);
                 playSparkleSound();
             });
 
@@ -456,7 +359,6 @@
         });
 
         function startGame() {
-            startBGM();
             homeScreen.style.opacity = '0';
             homeScreen.style.pointerEvents = 'none';
         }
@@ -473,43 +375,36 @@
                 const bubble = document.createElement('button');
                 bubble.className = `color-bubble w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white shadow-sm flex items-center justify-center ${index === 0 ? 'active ring-2 ring-emerald-500' : ''}`;
                 bubble.style.backgroundColor = color;
-                if (color === '#ffffff') bubble.classList.add('border-slate-300');
                 bubble.addEventListener('click', () => {
                     currentColor = color;
                     setMode('brush');
-                    highlightActiveColor(bubble);
+                    document.querySelectorAll('.color-bubble').forEach(b => b.classList.remove('active', 'ring-2', 'ring-emerald-500'));
+                    bubble.classList.add('active', 'ring-2', 'ring-emerald-500');
                     playSparkleSound();
                 });
                 paletteGrid.appendChild(bubble);
             });
         }
 
-        function highlightActiveColor(targetBubble) {
-            document.querySelectorAll('.color-bubble').forEach(b => b.classList.remove('active', 'ring-2', 'ring-emerald-500'));
-            if (targetBubble) targetBubble.classList.add('active', 'ring-2', 'ring-emerald-500');
-        }
-
         function setMode(mode) {
             currentMode = mode;
             if (mode === 'brush') {
-                document.getElementById('toolBrush').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-emerald-500 text-white shadow-md";
-                document.getElementById('toolEraser').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-slate-100 text-slate-700 hover:bg-slate-200";
+                document.getElementById('toolBrush').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-emerald-500 text-white shadow-md";
+                document.getElementById('toolEraser').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-slate-100 text-slate-700";
             } else {
-                document.getElementById('toolEraser').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-pink-500 text-white shadow-md";
-                document.getElementById('toolBrush').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-slate-100 text-slate-700 hover:bg-slate-200";
+                document.getElementById('toolEraser').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-pink-500 text-white shadow-md";
+                document.getElementById('toolBrush').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-slate-100 text-slate-700";
             }
         }
 
         function changeDino(dir) {
             currentDinoIndex = (currentDinoIndex + dir + DINOSAURS.length) % DINOSAURS.length;
             loadDinosaur(currentDinoIndex);
-            playDinoLaughter(); 
         }
 
         function loadDinosaur(index) {
             canvasLoader.classList.remove('hidden');
             aiOverlay.style.opacity = '0';
-            canvasContainer.classList.remove('dino-alive-anim', 'dino-dance-anim', 'dino-spin-anim', 'dino-burp-anim');
             resetColoring();
             document.getElementById('dinoName').textContent = TRANSLATIONS[currentLang].dinoNames[index];
 
@@ -520,9 +415,6 @@
             img.onload = () => {
                 outlineCtx.clearRect(0, 0, outlineCanvas.width, outlineCanvas.height);
                 outlineCtx.drawImage(img, 0, 0, outlineCanvas.width, outlineCanvas.height);
-                canvasLoader.classList.add('hidden');
-            };
-            img.onerror = () => {
                 canvasLoader.classList.add('hidden');
             };
             img.src = encodedSvg;
@@ -553,7 +445,6 @@
         function draw(e) {
             if (!isDrawing) return;
             const pos = getPos(e);
-
             colorCtx.lineWidth = brushSize;
             colorCtx.lineCap = 'round';
             colorCtx.lineJoin = 'round';
@@ -568,66 +459,59 @@
             if (isDrawing) {
                 isDrawing = false;
                 colorCtx.beginPath();
-                playSparkleSound(); 
+                playSparkleSound();
             }
         }
 
-        function triggerAIPolishAndScore() {
+        // --- AI 정밀 검수 시스템 로직 ---
+        function triggerAIInspection() {
             aiOverlay.style.opacity = '1';
-            const dino = DINOSAURS[currentDinoIndex];
-            canvasContainer.classList.remove('dino-alive-anim', 'dino-dance-anim', 'dino-spin-anim', 'dino-burp-anim');
-            if (dino.action === 'dance' || dino.action === 'eggPop' || dino.action === 'fly') canvasContainer.classList.add('dino-dance-anim');
-            else if (dino.action === 'spin') canvasContainer.classList.add('dino-spin-anim');
-            else if (dino.action === 'burp' || dino.action === 'nosePick') canvasContainer.classList.add('dino-burp-anim');
-            else canvasContainer.classList.add('dino-alive-anim');
-
             setTimeout(() => {
+                aiOverlay.style.opacity = '0';
                 const imgData = colorCtx.getImageData(0, 0, colorCanvas.width, colorCanvas.height).data;
-                let coloredPixels = 0, nonWhitePixels = 0;
+                let coloredPixels = 0, diverseColors = new Set();
+                
                 for (let i = 0; i < imgData.length; i += 4) {
                     const r = imgData[i], g = imgData[i+1], b = imgData[i+2];
                     if (r < 250 || g < 250 || b < 250) {
                         coloredPixels++;
-                        if (!(r === g && g === b)) {
-                            nonWhitePixels++;
-                        }
+                        diverseColors.add(`${Math.floor(r/50)},${Math.floor(g/50)},${Math.floor(b/50)}`);
                     }
                 }
-                const fillRatio = coloredPixels / (imgData.length / 4);
-                const hasCreativity = nonWhitePixels > 1500;
 
-                let score = 0;
-                if (fillRatio > 0.85 || (fillRatio > 0.65 && hasCreativity)) {
-                    score = 120; 
-                } else {
-                    score = Math.floor(fillRatio * 75) + 15;
-                    if (score > 70) score = 70;
-                }
+                const fillRatio = coloredPixels / (imgData.length / 4);
+                const colorVariety = diverseColors.size;
+
+                let score = Math.floor(fillRatio * 80) + (colorVariety * 3) + 20;
+                if (score > 100) score = 100;
+                if (score < 40) score = 45;
 
                 lastScore = score;
-                showScoreModal(score);
+                showInspectionResult(score, fillRatio, colorVariety);
             }, 1200);
         }
 
-        function showScoreModal(score) {
+        function showInspectionResult(score, fillRatio, colorVariety) {
             document.getElementById('scoreValue').textContent = `${score}점`;
-            const t = TRANSLATIONS[currentLang];
-            const rankingInputContainer = document.getElementById('rankingInputContainer');
             
-            if (score >= 100) {
+            let completeness = fillRatio > 0.4 ? "매우 꼼꼼하게 채색됨 🌟" : "조금 더 채워보세요! 💪";
+            let harmony = colorVariety > 5 ? "다양한 색상 조화가 훌륭함 🎨" : "단색 위주의 깔끔한 스타일 ✨";
+            
+            document.getElementById('inspectionDetails').innerHTML = `
+                • 채색 면적 검수: ${(fillRatio * 100).toFixed(1)}% 채워짐<br>
+                • 디테일 및 완성도: ${completeness}<br>
+                • 컬러 다양성 평가: ${harmony}
+            `;
+
+            if (score >= 80) {
                 document.getElementById('modalEmoji').textContent = '🏆';
-                document.getElementById('praiseBadge').textContent = t.praiseHigh;
-                document.getElementById('praiseMessage').textContent = t.msgHigh;
-                rankingInputContainer.style.display = 'flex';
-                if (typeof confetti === 'function') {
-                    confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
-                }
+                document.getElementById('praiseMessage').textContent = '"AI 검수관: 선 안쪽을 아주 멋지게 완성했습니다! 완벽한 걸작이에요."';
+                if (typeof confetti === 'function') confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
             } else {
                 document.getElementById('modalEmoji').textContent = '🐣';
-                document.getElementById('praiseBadge').textContent = t.praiseLow;
-                document.getElementById('praiseMessage').textContent = t.msgLow;
-                rankingInputContainer.style.display = 'none';
+                document.getElementById('praiseMessage').textContent = '"AI 검수관: 빈 곳을 조금 더 채워넣으면 만점이 될 수 있어요!"';
             }
+
             scoreModal.classList.remove('opacity-0', 'pointer-events-none');
             scoreModalCard.classList.remove('scale-90'); scoreModalCard.classList.add('scale-100');
         }
@@ -640,11 +524,10 @@
         function saveCurrentScoreToRanking() {
             const nameInput = document.getElementById('playerNameInput');
             const name = nameInput.value.trim() || '꼬마 화가';
-            const dinoName = TRANSLATIONS[currentLang].dinoNames[currentDinoIndex].split(' ')[1];
+            const dinoName = TRANSLATIONS[currentLang].dinoNames[currentDinoIndex];
 
             let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
             rankings.push({ name: name, score: lastScore, dino: dinoName, date: new Date().toLocaleDateString() });
-            
             rankings.sort((a, b) => b.score - a.score);
             rankings = rankings.slice(0, 10);
 
@@ -657,10 +540,10 @@
         function showRankingBoard() {
             const rankingListContainer = document.getElementById('rankingListContainer');
             rankingListContainer.innerHTML = '';
-            
             let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
+            
             if (rankings.length === 0) {
-                rankingListContainer.innerHTML = '<div class="text-center py-4 text-slate-400 font-bold">아직 등록된 랭킹이 없어요!<br>만점을 달성하고 이름을 올려보세요 🏆</div>';
+                rankingListContainer.innerHTML = '<div class="text-center py-4 text-slate-400 font-bold">아직 등록된 랭킹이 없어요!<br>AI 검수를 받고 이름을 올려보세요 🏆</div>';
             } else {
                 rankings.forEach((item, index) => {
                     const row = document.createElement('div');
@@ -691,15 +574,9 @@
             tCtx.drawImage(outlineCanvas, 0, 0);
 
             const link = document.createElement('a');
-            link.download = 'my_dino_masterpiece.png';
+            link.download = 'dino_inspection_result.png';
             link.href = tempCanvas.toDataURL('image/png');
             link.click();
-        }
-
-        function shareOnX() {
-            const text = encodeURIComponent("AI 공룡 색칠놀이에서 멋진 걸작을 완성했어요! 🎨✨ #공룡색칠놀이 #AI키즈아트");
-            const url = `https://twitter.com/intent/tweet?text=${text}`;
-            window.open(url, '_blank');
         }
     </script>
 </body>
