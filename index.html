@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+
+ 
+         
+      <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -26,22 +29,6 @@
             transform: scale(1.2);
             box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         }
-        
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(4deg); }
-        }
-        @keyframes floatMedium {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-18px) rotate(-5deg); }
-        }
-        @keyframes floatFast {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-22px) scale(1.08); }
-        }
-        .animate-float-slow { animation: floatSlow 3s ease-in-out infinite; }
-        .animate-float-medium { animation: floatMedium 2.4s ease-in-out infinite; }
-        .animate-float-fast { animation: floatFast 2s ease-in-out infinite; }
 
         @keyframes dinoAlive {
             0% { transform: scale(1) translateY(0) rotate(0deg) rotateY(0deg); filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2)); }
@@ -209,7 +196,6 @@
             <h3 id="scoreValue" class="text-3xl font-extrabold text-slate-800">120점</h3>
             <p id="praiseMessage" class="text-slate-600 text-xs font-semibold leading-relaxed px-1">"바탕과 멋진 창의적 그림까지 완벽해요!"</p>
             
-            <!-- Player Name Input for Ranking -->
             <div id="rankingInputContainer" class="w-full bg-amber-50 p-2.5 rounded-2xl border border-amber-200 flex flex-col gap-1.5">
                 <span class="text-xs font-bold text-amber-800">🏆 랭킹에 이름을 남겨보세요!</span>
                 <div class="flex gap-2">
@@ -218,10 +204,9 @@
                 </div>
             </div>
 
-            <!-- Social Share & Save Buttons -->
             <div class="w-full flex flex-col gap-1.5">
                 <button id="downloadImgBtn" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-download"></i> 내 그림 이미지로 저장하기 (인스타 업로드용)
+                    <i class="fa-solid fa-download"></i> 내 그림 이미지로 저장하기
                 </button>
                 <button id="shareXBtn" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
                     <i class="fa-brands fa-x-twitter"></i> X(트위터)로 자랑하기
@@ -240,9 +225,7 @@
         <div id="rankingModalCard" class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col items-center gap-3">
             <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center text-2xl shadow-inner text-yellow-500">👑</div>
             <h3 class="text-xl font-extrabold text-slate-800">명예의 전당 랭킹 (Top 10)</h3>
-            <div id="rankingListContainer" class="w-full max-h-60 overflow-y-auto flex flex-col gap-1.5 text-left text-xs font-semibold text-slate-700 pr-1">
-                <!-- Rankings injected via JS -->
-            </div>
+            <div id="rankingListContainer" class="w-full max-h-60 overflow-y-auto flex flex-col gap-1.5 text-left text-xs font-semibold text-slate-700 pr-1"></div>
             <button id="closeRankingBtn" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-sm shadow-md transition mt-1">닫기</button>
         </div>
     </div>
@@ -638,7 +621,7 @@
                 document.getElementById('modalEmoji').textContent = '🏆';
                 document.getElementById('praiseBadge').textContent = t.praiseHigh;
                 document.getElementById('praiseMessage').textContent = t.msgHigh;
-                rankingInputContainer.style.display = 'flex'; // 만점일 때만 랭킹 등록 허용
+                rankingInputContainer.style.display = 'flex';
                 if (typeof confetti === 'function') {
                     confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 } });
                 }
@@ -646,7 +629,7 @@
                 document.getElementById('modalEmoji').textContent = '🐣';
                 document.getElementById('praiseBadge').textContent = t.praiseLow;
                 document.getElementById('praiseMessage').textContent = t.msgLow;
-                rankingInputContainer.style.display = 'none'; // 미완성은 랭킹 등록 불가
+                rankingInputContainer.style.display = 'none';
             }
             scoreModal.classList.remove('opacity-0', 'pointer-events-none');
             scoreModalCard.classList.remove('scale-90'); scoreModalCard.classList.add('scale-100');
@@ -657,7 +640,6 @@
             scoreModalCard.classList.remove('scale-100'); scoreModalCard.classList.add('scale-90');
         }
 
-        // --- 랭킹 및 공유 기능 구현 ---
         function saveCurrentScoreToRanking() {
             const nameInput = document.getElementById('playerNameInput');
             const name = nameInput.value.trim() || '꼬마 화가';
@@ -666,7 +648,6 @@
             let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
             rankings.push({ name: name, score: lastScore, dino: dinoName, date: new Date().toLocaleDateString() });
             
-            // 점수 높은 순으로 정렬 후 상위 10개만 유지
             rankings.sort((a, b) => b.score - a.score);
             rankings = rankings.slice(0, 10);
 
@@ -704,7 +685,6 @@
         }
 
         function downloadCanvasImage() {
-            // 배경 흰색 채운 임시 캔버스 생성 후 다운로드 링크 생성
             const tempCanvas = document.createElement('canvas');
             tempCanvas.width = 500; tempCanvas.height = 500;
             const tCtx = tempCanvas.getContext('2d');
