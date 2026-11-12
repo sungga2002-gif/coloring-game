@@ -29,7 +29,7 @@
         }
         #canvasContainer {
             width: 100%;
-            max-width: min(320px, 42vh);
+            max-width: min(280px, 36vh);
             aspect-ratio: 1 / 1;
             margin: 0 auto;
         }
@@ -89,21 +89,21 @@
     </div>
 
     <!-- 상단 헤더 -->
-    <header class="bg-emerald-500 text-white shadow-md px-3 py-1.5 text-center z-20 rounded-b-2xl shrink-0">
+    <header class="bg-emerald-500 text-white shadow-md px-3 py-1 text-center z-20 rounded-b-2xl shrink-0">
         <div class="max-w-md mx-auto flex justify-between items-center px-1">
             <div class="flex items-center gap-2">
-                <button id="mainHomeBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white w-7 h-7 rounded-full border border-emerald-400 flex items-center justify-center shadow-sm active:scale-95 transition" title="홈으로">
-                    <i class="fa-solid fa-house text-xs"></i>
+                <button id="mainHomeBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white w-6 h-6 rounded-full border border-emerald-400 flex items-center justify-center shadow-sm active:scale-95 transition" title="홈으로">
+                    <i class="fa-solid fa-house text-[10px]"></i>
                 </button>
-                <h1 class="text-sm sm:text-base font-bold flex items-center gap-1.5 tracking-wide">
+                <h1 class="text-sm font-bold flex items-center gap-1 tracking-wide">
                     <i class="fa-solid fa-dragon text-yellow-300"></i> <span id="appHeaderTitle">공룡 색칠놀이</span>
                 </h1>
             </div>
-            <div class="flex items-center gap-1.5">
-                <button id="openRankingHeaderBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-[11px] px-2 py-0.5 rounded-full font-bold shadow-sm transition active:scale-95 flex items-center gap-1">
+            <div class="flex items-center gap-1">
+                <button id="openRankingHeaderBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-[10px] px-2 py-0.5 rounded-full font-bold shadow-sm transition active:scale-95 flex items-center gap-1">
                     <i class="fa-solid fa-trophy"></i> 랭킹
                 </button>
-                <button id="langToggleBtn" class="bg-emerald-600 hover:bg-emerald-700 text-[11px] px-2 py-0.5 rounded-full border border-emerald-400 text-yellow-200 font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
+                <button id="langToggleBtn" class="bg-emerald-600 hover:bg-emerald-700 text-[10px] px-2 py-0.5 rounded-full border border-emerald-400 text-yellow-200 font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
                     <span id="langFlag">🇰🇷</span> <span id="langLabel">한국어</span>
                 </button>
             </div>
@@ -113,14 +113,14 @@
     <!-- 메인 작업 영역 -->
     <main class="flex-1 max-w-md w-full mx-auto px-3 py-1 flex flex-col justify-around items-center overflow-hidden">
         <!-- 공룡 선택 및 이동 바 -->
-        <div class="w-full flex justify-between items-center bg-white px-3 py-1.5 rounded-xl shadow-sm border border-amber-200 shrink-0">
-            <button id="prevBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded-lg font-bold text-xs transition active:scale-95 flex items-center gap-1">
+        <div class="w-full flex justify-between items-center bg-white px-3 py-1 rounded-xl shadow-sm border border-amber-200 shrink-0">
+            <button id="prevBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-2 py-0.5 rounded-lg font-bold text-xs transition active:scale-95 flex items-center gap-1">
                 <i class="fa-solid fa-chevron-left"></i> <span id="prevBtnText">이전</span>
             </button>
             <div class="text-center">
-                <span id="dinoName" class="text-sm sm:text-base font-bold text-emerald-700">1. 티라노사우루스</span>
+                <span id="dinoName" class="text-xs sm:text-sm font-bold text-emerald-700">1. 티라노사우루스</span>
             </div>
-            <button id="nextBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-2.5 py-1 rounded-lg font-bold text-xs transition active:scale-95 flex items-center gap-1">
+            <button id="nextBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-2 py-0.5 rounded-lg font-bold text-xs transition active:scale-95 flex items-center gap-1">
                 <span id="nextBtnText">다음</span> <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
@@ -131,58 +131,58 @@
             <canvas id="outlineCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
             
             <div id="reactionOverlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center transition-all duration-500 opacity-0 z-10 bg-black/10">
-                <div id="reactionEmoji" class="text-5xl animate-bounce mb-1">🔥</div>
-                <div id="reactionText" class="bg-white/95 px-4 py-1.5 rounded-xl shadow-lg text-emerald-700 font-extrabold text-sm sm:text-base border-2 border-yellow-400">
+                <div id="reactionEmoji" class="text-4xl animate-bounce mb-1">🔥</div>
+                <div id="reactionText" class="bg-white/95 px-3 py-1 rounded-xl shadow-lg text-emerald-700 font-extrabold text-xs sm:text-sm border-2 border-yellow-400">
                     불뿜기 대성공! 뿜뿜~ 🔥
                 </div>
             </div>
         </div>
 
         <!-- 안내 문구 -->
-        <div id="voiceFeedbackBadge" class="w-full bg-amber-100 text-amber-900 px-3 py-1 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-1.5 border border-amber-300 shrink-0">
+        <div id="voiceFeedbackBadge" class="w-full bg-amber-100 text-amber-900 px-2.5 py-0.5 rounded-xl font-bold text-[11px] text-center flex items-center justify-center gap-1 border border-amber-300 shrink-0">
             <i class="fa-solid fa-paintbrush text-emerald-600 animate-pulse"></i>
-            <span id="voiceStatusText">공룡과 배경(해, 구름 등)을 모두 예쁘게 칠해보세요! 🦖✨</span>
+            <span id="voiceStatusText">공룡(50점)과 배경까지(120점) 예쁘게 칠해봐요! 🦖✨</span>
         </div>
 
         <!-- 컬러 팔레트 (색상 선택) -->
-        <div class="w-full bg-white px-3 py-1.5 rounded-xl shadow-sm border border-amber-200 flex flex-col gap-1 shrink-0">
-            <div class="text-[11px] font-bold text-slate-500 px-0.5 flex justify-between items-center">
+        <div class="w-full bg-white px-3 py-1 rounded-xl shadow-sm border border-amber-200 flex flex-col gap-0.5 shrink-0">
+            <div class="text-[10px] font-bold text-slate-500 px-0.5 flex justify-between items-center">
                 <span>🎨 색상 고르기</span>
-                <span id="selectedColorIndicator" class="w-3.5 h-3.5 rounded-full inline-block border border-slate-300" style="background-color: #ef4444;"></span>
+                <span id="selectedColorIndicator" class="w-3 h-3 rounded-full inline-block border border-slate-300" style="background-color: #ef4444;"></span>
             </div>
             <div class="flex justify-between items-center gap-1 px-0.5">
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-red-500 active" data-color="#ef4444"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-orange-500" data-color="#f97316"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-yellow-400" data-color="#facc15"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-green-500" data-color="#22c55e"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-blue-500" data-color="#3b82f6"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-indigo-500" data-color="#6366f1"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-purple-500" data-color="#a855f7"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-pink-500" data-color="#ec4899"></div>
-                <div class="color-bubble w-6 h-6 sm:w-7 sm:h-7 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-amber-800" data-color="#92400e"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-red-500 active" data-color="#ef4444"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-orange-500" data-color="#f97316"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-yellow-400" data-color="#facc15"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-green-500" data-color="#22c55e"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-blue-500" data-color="#3b82f6"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-indigo-500" data-color="#6366f1"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-purple-500" data-color="#a855f7"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-pink-500" data-color="#ec4899"></div>
+                <div class="color-bubble w-5 h-5 sm:w-6 sm:h-6 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-amber-800" data-color="#92400e"></div>
             </div>
         </div>
 
         <!-- 하단 도구 및 완료 버튼 -->
-        <div class="w-full bg-white px-3 py-2 rounded-xl shadow-sm border border-amber-200 flex flex-col gap-1.5 shrink-0">
+        <div class="w-full bg-white px-3 py-1.5 rounded-xl shadow-sm border border-amber-200 flex flex-col gap-1 shrink-0">
             <div class="flex justify-around items-center gap-1.5">
-                <button id="toolBrush" class="tool-btn flex-1 py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-emerald-500 text-white shadow-sm">
-                    <i class="fa-solid fa-paintbrush text-sm"></i> <span id="btnBrushText">붓</span>
+                <button id="toolBrush" class="tool-btn flex-1 py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-emerald-500 text-white shadow-sm">
+                    <i class="fa-solid fa-paintbrush text-xs"></i> <span id="btnBrushText">붓</span>
                 </button>
-                <button id="toolEraser" class="tool-btn flex-1 py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200">
-                    <i class="fa-solid fa-eraser text-sm"></i> <span id="btnEraserText">지우개</span>
+                <button id="toolEraser" class="tool-btn flex-1 py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-eraser text-xs"></i> <span id="btnEraserText">지우개</span>
                 </button>
-                <button id="toolReset" class="tool-btn flex-1 py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200">
-                    <i class="fa-solid fa-rotate-right text-sm"></i> <span id="btnResetText">다시하기</span>
+                <button id="toolReset" class="tool-btn flex-1 py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-rotate-right text-xs"></i> <span id="btnResetText">다시하기</span>
                 </button>
-                <button id="toolComplete" class="tool-btn flex-[1.4] py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-yellow-950 shadow-md border border-yellow-300">
-                    <i class="fa-solid fa-star text-sm animate-spin"></i> <span id="btnCompleteText">완료! 🌟</span>
+                <button id="toolComplete" class="tool-btn flex-[1.4] py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-yellow-950 shadow-md border border-yellow-300">
+                    <i class="fa-solid fa-star text-xs animate-spin"></i> <span id="btnCompleteText">완료! 🌟</span>
                 </button>
             </div>
             <!-- 붓 두께 슬라이더 -->
             <div class="flex items-center gap-2 px-1">
-                <span class="text-[11px] font-bold text-slate-500 whitespace-nowrap" id="brushSizeLabel">두께:</span>
-                <input type="range" id="brushSizeRange" min="10" max="50" value="25" class="w-full accent-emerald-500 cursor-pointer h-1.5">
+                <span class="text-[10px] font-bold text-slate-500 whitespace-nowrap" id="brushSizeLabel">두께:</span>
+                <input type="range" id="brushSizeRange" min="10" max="50" value="25" class="w-full accent-emerald-500 cursor-pointer h-1">
             </div>
         </div>
     </main>
@@ -236,7 +236,7 @@
                 btnResetText: "다시하기",
                 btnCompleteText: "완료! 🌟",
                 brushSizeLabel: "두께:",
-                voiceStatusText: "공룡과 배경(해, 구름 등)을 모두 예쁘게 칠해보세요! 🦖✨",
+                voiceStatusText: "공룡(50점)과 배경(120점)을 모두 예쁘게 칠해보세요! 🦖✨",
                 dinoNames: [
                     "1. 티라노사우루스",
                     "2. 트리케라톱스",
@@ -303,7 +303,7 @@
             drawCurrentDinoAndBackground();
         }
 
-        // 공룡과 배경(해, 구름, 풀숲)을 각 캐릭터 특징에 맞게 정성스럽게 드로잉
+        // 공룡 및 배경(해, 구름, 풀숲) 정성스러운 드로잉
         function drawCurrentDinoAndBackground() {
             ctxOutline.clearRect(0, 0, outlineCanvas.width, outlineCanvas.height);
             ctxOutline.strokeStyle = '#1e293b';
@@ -314,122 +314,101 @@
             const cx = 250, cy = 250;
 
             // --- 1. 배경 요소 (해, 구름, 풀숲) ---
-            // 해 (우측 상단)
             ctxOutline.beginPath();
-            ctxOutline.arc(420, 80, 35, 0, Math.PI * 2);
-            // 햇살
+            ctxOutline.arc(410, 80, 32, 0, Math.PI * 2);
             for(let i=0; i<8; i++) {
                 let angle = (i * Math.PI) / 4;
-                let x1 = 420 + Math.cos(angle) * 42;
-                let y1 = 80 + Math.sin(angle) * 42;
-                let x2 = 420 + Math.cos(angle) * 58;
-                let y2 = 80 + Math.sin(angle) * 58;
-                ctxOutline.moveTo(x1, y1);
-                ctxOutline.lineTo(x2, y2);
+                let x1 = 410 + Math.cos(angle) * 38;
+                let y1 = 80 + Math.sin(angle) * 38;
+                let x2 = 410 + Math.cos(angle) * 52;
+                let y2 = 80 + Math.sin(angle) * 52;
+                ctxOutline.moveTo(x1, y1); ctxOutline.lineTo(x2, y2);
             }
             ctxOutline.stroke();
 
-            // 구름 (좌측 상단)
+            // 구름
             ctxOutline.beginPath();
-            ctxOutline.arc(80, 90, 20, 0, Math.PI * 2);
-            ctxOutline.arc(110, 80, 25, 0, Math.PI * 2);
-            ctxOutline.arc(140, 95, 18, 0, Math.PI * 2);
+            ctxOutline.arc(80, 85, 18, 0, Math.PI * 2);
+            ctxOutline.arc(108, 75, 22, 0, Math.PI * 2);
+            ctxOutline.arc(135, 90, 16, 0, Math.PI * 2);
             ctxOutline.stroke();
 
-            // 바닥 풀숲 (하단)
+            // 바닥 풀숲
             ctxOutline.beginPath();
-            ctxOutline.moveTo(30, 460);
-            ctxOutline.lineTo(470, 460);
-            ctxOutline.moveTo(60, 460); ctxOutline.lineTo(75, 425); ctxOutline.lineTo(90, 460);
-            ctxOutline.moveTo(180, 460); ctxOutline.lineTo(200, 415); ctxOutline.lineTo(220, 460);
-            ctxOutline.moveTo(350, 460); ctxOutline.lineTo(370, 420); ctxOutline.lineTo(390, 460);
+            ctxOutline.moveTo(40, 460); ctxOutline.lineTo(460, 460);
+            ctxOutline.moveTo(70, 460); ctxOutline.lineTo(85, 425); ctxOutline.lineTo(100, 460);
+            ctxOutline.moveTo(190, 460); ctxOutline.lineTo(210, 415); ctxOutline.lineTo(230, 460);
+            ctxOutline.moveTo(340, 460); ctxOutline.lineTo(360, 420); ctxOutline.lineTo(380, 460);
             ctxOutline.stroke();
 
 
-            // --- 2. 개성 넘치는 공룡 캐릭터별 외곽선 ---
+            // --- 2. 개성 넘치는 공룡 캐릭터 외곽선 ---
             ctxOutline.beginPath();
 
             if (currentDinoIndex === 0) {
-                // 1. 티라노사우루스 (용맹한 두 발 공룡, 거대한 입과 이빨)
-                // 머리 및 몸통
-                ctxOutline.moveTo(cx - 60, cy - 80);
-                ctxOutline.lineTo(cx + 80, cy - 70); // 주둥이 윗부분
-                ctxOutline.lineTo(cx + 90, cy - 40); // 입 벌린 턱
-                ctxOutline.lineTo(cx + 30, cy - 30);
-                ctxOutline.lineTo(cx + 70, cy + 40); // 튼튼한 다리
-                ctxOutline.lineTo(cx + 100, cy + 130);
-                ctxOutline.lineTo(cx + 60, cy + 130);
-                ctxOutline.lineTo(cx + 30, cy + 70);
-                ctxOutline.lineTo(cx - 30, cy + 130); // 뒷다리
-                ctxOutline.lineTo(cx - 70, cy + 130);
-                ctxOutline.lineTo(cx - 50, cy + 60);
-                ctxOutline.lineTo(cx - 130, cy + 20); // 굵은 꼬리
-                ctxOutline.lineTo(cx - 70, cy - 40);
+                // 1. 티라노사우루스
+                ctxOutline.moveTo(cx - 50, cy - 80);
+                ctxOutline.lineTo(cx + 70, cy - 70);
+                ctxOutline.lineTo(cx + 80, cy - 40);
+                ctxOutline.lineTo(cx + 20, cy - 20);
+                ctxOutline.lineTo(cx + 60, cy + 50);
+                ctxOutline.lineTo(cx + 90, cy + 130);
+                ctxOutline.lineTo(cx + 50, cy + 130);
+                ctxOutline.lineTo(cx + 20, cy + 70);
+                ctxOutline.lineTo(cx - 40, cy + 130);
+                ctxOutline.lineTo(cx - 80, cy + 130);
+                ctxOutline.lineTo(cx - 60, cy + 60);
+                ctxOutline.lineTo(cx - 130, cy + 20);
+                ctxOutline.lineTo(cx - 60, cy - 40);
                 ctxOutline.closePath();
-                // 눈
                 ctxOutline.fillStyle = '#1e293b';
-                ctxOutline.beginPath(); ctxOutline.arc(cx + 40, cy - 60, 7, 0, Math.PI * 2); ctxOutline.fill();
+                ctxOutline.beginPath(); ctxOutline.arc(cx + 35, cy - 55, 6, 0, Math.PI * 2); ctxOutline.fill();
             } 
             else if (currentDinoIndex === 1) {
-                // 2. 트리케라톱스 (머리에 뿔 3개와 거대한 방패 프릴)
-                // 몸통 (둥근 형태)
+                // 2. 트리케라톱스
                 ctxOutline.arc(cx, cy + 20, 75, 0, Math.PI * 2);
-                // 목 프릴 (방패)
-                ctxOutline.moveTo(cx - 40, cy - 40);
-                ctxOutline.bezierCurveTo(cx - 100, cy - 120, cx + 100, cy - 120, cx + 40, cy - 40);
-                // 뿔 3개
-                ctxOutline.moveTo(cx + 50, cy - 70); ctxOutline.lineTo(cx + 85, cy - 95); ctxOutline.lineTo(cx + 60, cy - 50);
-                ctxOutline.moveTo(cx - 10, cy - 80); ctxOutline.lineTo(cx - 20, cy - 110); ctxOutline.lineTo(cx + 10, cy - 70);
-                // 짧은 꼬리 및 다리
+                ctxOutline.moveTo(cx - 35, cy - 40);
+                ctxOutline.bezierCurveTo(cx - 95, cy - 110, cx + 95, cy - 110, cx + 35, cy - 40);
+                ctxOutline.moveTo(cx + 45, cy - 65); ctxOutline.lineTo(cx + 80, cy - 90); ctxOutline.lineTo(cx + 55, cy - 45);
+                ctxOutline.moveTo(cx - 10, cy - 75); ctxOutline.lineTo(cx - 20, cy - 105); ctxOutline.lineTo(cx + 10, cy - 65);
                 ctxOutline.moveTo(cx - 70, cy + 40); ctxOutline.lineTo(cx - 100, cy + 50);
                 ctxOutline.stroke();
-                // 눈
                 ctxOutline.fillStyle = '#1e293b';
                 ctxOutline.beginPath(); ctxOutline.arc(cx + 25, cy - 20, 6, 0, Math.PI * 2); ctxOutline.fill();
             } 
             else if (currentDinoIndex === 2) {
-                // 3. 브라키오사우루스 (긴 목을 가진 온순한 초식 공룡)
-                // 긴 목과 머리
+                // 3. 브라키오사우루스
                 ctxOutline.moveTo(cx - 30, cy + 80);
-                ctxOutline.lineTo(cx - 30, cy - 80); // 목
-                ctxOutline.arc(cx - 15, cy - 95, 20, Math.PI, Math.PI * 2.5); // 머리
-                // 뚱뚱한 몸통
-                ctxOutline.ellipse(cx + 30, cy + 40, 80, 55, 0, 0, Math.PI * 2);
-                // 긴 꼬리 및 다리
-                ctxOutline.moveTo(cx + 110, cy + 40); ctxOutline.lineTo(cx + 160, cy + 70);
+                ctxOutline.lineTo(cx - 30, cy - 80);
+                ctxOutline.arc(cx - 15, cy - 95, 18, Math.PI, Math.PI * 2.5);
+                ctxOutline.ellipse(cx + 30, cy + 40, 75, 50, 0, 0, Math.PI * 2);
+                ctxOutline.moveTo(cx + 100, cy + 40); ctxOutline.lineTo(cx + 150, cy + 70);
                 ctxOutline.stroke();
-                // 눈
                 ctxOutline.fillStyle = '#1e293b';
                 ctxOutline.beginPath(); ctxOutline.arc(cx - 5, cy - 98, 5, 0, Math.PI * 2); ctxOutline.fill();
             } 
             else if (currentDinoIndex === 3) {
-                // 4. 프테라노돈 (하늘을 나는 익룡, 거대한 날개와 머리 벼슬)
-                // 몸통 및 머리 벼슬
-                ctxOutline.ellipse(cx, cy + 20, 35, 50, 0, 0, Math.PI * 2);
-                ctxOutline.moveTo(cx, cy - 30); ctxOutline.lineTo(cx - 90, cy - 60); // 긴 부리
-                ctxOutline.moveTo(cx, cy - 30); ctxOutline.lineTo(cx + 50, cy - 70); // 뒤통수 벼슬
-                // 거대한 좌우 날개
-                ctxOutline.moveTo(cx - 20, cy); ctxOutline.lineTo(cx - 170, cy - 20); ctxOutline.lineTo(cx - 50, cy + 50);
-                ctxOutline.moveTo(cx + 20, cy); ctxOutline.lineTo(cx + 170, cy - 20); ctxOutline.lineTo(cx + 50, cy + 50);
+                // 4. 프테라노돈
+                ctxOutline.ellipse(cx, cy + 20, 30, 45, 0, 0, Math.PI * 2);
+                ctxOutline.moveTo(cx, cy - 25); ctxOutline.lineTo(cx - 85, cy - 55);
+                ctxOutline.moveTo(cx, cy - 25); ctxOutline.lineTo(cx + 45, cy - 65);
+                ctxOutline.moveTo(cx - 15, cy); ctxOutline.lineTo(cx - 150, cy - 15); ctxOutline.lineTo(cx - 40, cy + 45);
+                ctxOutline.moveTo(cx + 15, cy); ctxOutline.lineTo(cx + 150, cy - 15); ctxOutline.lineTo(cx + 40, cy + 45);
                 ctxOutline.stroke();
-                // 눈
                 ctxOutline.fillStyle = '#1e293b';
-                ctxOutline.beginPath(); ctxOutline.arc(cx - 25, cy - 40, 5, 0, Math.PI * 2); ctxOutline.fill();
+                ctxOutline.beginPath(); ctxOutline.arc(cx - 20, cy - 35, 5, 0, Math.PI * 2); ctxOutline.fill();
             } 
             else {
-                // 5. 스테고사우루스 (등에 멋진 빗살 모양 골판이 있는 공룡)
-                // 둥근 몸통
-                ctxOutline.ellipse(cx, cy + 20, 90, 60, 0, 0, Math.PI * 2);
-                // 작은 머리
-                ctxOutline.arc(cx - 95, cy + 20, 20, 0, Math.PI * 2);
-                // 등에 삼각형 골판들
-                ctxOutline.moveTo(cx - 70, cy - 40); ctxOutline.lineTo(cx - 85, cy - 90); ctxOutline.lineTo(cx - 45, cy - 45);
-                ctxOutline.moveTo(cx - 30, cy - 45); ctxOutline.lineTo(cx - 35, cy - 95); ctxOutline.lineTo(cx + 5, cy - 45);
-                ctxOutline.moveTo(cx + 20, cy - 45); ctxOutline.lineTo(cx + 30, cy - 95); ctxOutline.lineTo(cx + 60, cy - 45);
+                // 5. 스테고사우루스 (등의 뾰족한 골판이 살아있는 정성스러운 모양)
+                ctxOutline.ellipse(cx, cy + 20, 85, 55, 0, 0, Math.PI * 2);
+                ctxOutline.arc(cx - 90, cy + 15, 18, 0, Math.PI * 2);
+                // 등에 뾰족한 삼각형 골판들
+                ctxOutline.moveTo(cx - 65, cy - 35); ctxOutline.lineTo(cx - 75, cy - 85); ctxOutline.lineTo(cx - 40, cy - 40);
+                ctxOutline.moveTo(cx - 25, cy - 40); ctxOutline.lineTo(cx - 30, cy - 90); ctxOutline.lineTo(cx + 5, cy - 40);
+                ctxOutline.moveTo(cx + 20, cy - 40); ctxOutline.lineTo(cx + 25, cy - 90); ctxOutline.lineTo(cx + 55, cy - 40);
                 ctxOutline.stroke();
-                // 눈
                 ctxOutline.fillStyle = '#1e293b';
-                ctxOutline.beginPath(); ctxOutline.arc(cx - 100, cy + 15, 5, 0, Math.PI * 2); ctxOutline.fill();
+                ctxOutline.beginPath(); ctxOutline.arc(cx - 95, cy + 10, 5, 0, Math.PI * 2); ctxOutline.fill();
             }
 
             ctxOutline.stroke();
@@ -515,11 +494,11 @@
             const bBtn = document.getElementById('toolBrush');
             const eBtn = document.getElementById('toolEraser');
             if(currentTool === 'brush') {
-                bBtn.className = "tool-btn flex-1 py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-emerald-500 text-white shadow-sm";
-                eBtn.className = "tool-btn flex-1 py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200";
+                bBtn.className = "tool-btn flex-1 py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-emerald-500 text-white shadow-sm";
+                eBtn.className = "tool-btn flex-1 py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200";
             } else {
-                eBtn.className = "tool-btn flex-1 py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-emerald-500 text-white shadow-sm";
-                bBtn.className = "tool-btn flex-1 py-1.5 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200";
+                eBtn.className = "tool-btn flex-1 py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-emerald-500 text-white shadow-sm";
+                bBtn.className = "tool-btn flex-1 py-1 rounded-xl font-bold text-xs flex flex-col items-center gap-0.5 transition bg-slate-100 text-slate-600 hover:bg-slate-200";
             }
         }
 
@@ -569,13 +548,11 @@
             updateDinoInfo();
         }
 
-        // --- 창의성 점수 채점 알고리즘 (요청하신 기준 반영) ---
-        // 1. 공룡만 색칠: 50점
-        // 2. 공룡 + 배경(해, 구름, 풀숲)까지 모두 색칠: 100점 ~ 120점 (만점)
+        // --- 채점 알고리즘 (요청하신 기준 적용) ---
+        // 공룡만 칠함: 50점 / 공룡+배경 골고루 칠함: 100점 / 해·구름·풀숲까지 완벽 채색: 120점 만점
         function calculateScoreAndEvaluate() {
             const imgData = ctxColor.getImageData(0, 0, colorCanvas.width, colorCanvas.height).data;
             let totalPaintedPixels = 0;
-            let centerPaintedPixels = 0; // 공룡 영역 (중앙)
             let bgPaintedPixels = 0;     // 배경 영역 (상단 해/구름, 하단 풀숲)
 
             for (let y = 0; y < colorCanvas.height; y++) {
@@ -586,38 +563,32 @@
                     const b = imgData[idx+2];
                     const a = imgData[idx+3];
 
-                    // 흰색(배경)이 아니면 색칠된 픽셀로 판정
                     if (a > 50 && !(r > 245 && g > 245 && b > 245)) {
                         totalPaintedPixels++;
-                        // 영역 구분 (중앙 공룡 vs 바깥쪽 배경)
+                        // 바깥쪽 배경 영역 판정
                         const dx = x - 250, dy = y - 250;
                         const distFromCenter = Math.sqrt(dx*dx + dy*dy);
-
-                        if (distFromCenter < 100) {
-                            centerPaintedPixels++;
-                        } else {
+                        if (distFromCenter > 90) {
                             bgPaintedPixels++;
                         }
                     }
                 }
             }
 
-            let score = 50; // 기본 공룡만 칠했을 때
+            let score = 50; 
             let badgeText = TRANALATIONS_EVAL('low');
             let msgText = TRANSLATIONS[currentLang].msg50;
 
             if (totalPaintedPixels > 2500 && bgPaintedPixels > 400) {
-                // 공룡과 배경을 모두 풍부하게 칠한 경우 -> 120점 만점!
-                score = 120;
+                score = 120; // 창의성 만점
                 badgeText = TRANALATIONS_EVAL('high');
                 msgText = TRANSLATIONS[currentLang].msg120;
-            } else if (totalPaintedPixels > 1200 && bgPaintedPixels > 150) {
-                // 배경을 어느 정도 칠한 경우 -> 100점
-                score = 100;
+            } else if (totalPaintedPixels > 1000 && bgPaintedPixels > 100) {
+                score = 100; // 배경 포함
                 badgeText = TRANALATIONS_EVAL('mid');
                 msgText = TRANSLATIONS[currentLang].msg100;
             } else {
-                score = 50;
+                score = 50; // 공룡 위주
                 badgeText = TRANALATIONS_EVAL('low');
                 msgText = TRANSLATIONS[currentLang].msg50;
             }
@@ -665,7 +636,6 @@
                 overlay.classList.add('opacity-0', 'pointer-events-none');
                 document.getElementById('canvasContainer').classList.remove('dino-fire', 'dino-burp', 'dino-dance');
                 
-                // 채점 결과 계산 및 모달 오픈
                 const evaluation = calculateScoreAndEvaluate();
                 showScoreModal(evaluation.score, evaluation.badgeText, evaluation.msgText);
             }, 2000);
@@ -724,7 +694,7 @@
             container.innerHTML = '';
             let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
             
-            if (ranking.length === 0 && rankings.length === 0) {
+            if (rankings.length === 0) {
                 container.innerHTML = '<div class="text-center py-6 text-slate-400 font-bold">아직 등록된 랭킹이 없어요!<br>완료하고 이름을 올려보세요 🏆</div>';
                 return;
             }
