@@ -82,7 +82,7 @@
             <div id="reactionOverlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center transition-all duration-500 opacity-0 z-20 bg-black/10">
                 <div id="reactionEmoji" class="text-5xl animate-bounce mb-1">🔥</div>
                 <div id="reactionText" class="bg-white/95 px-4 py-1.5 rounded-xl shadow-lg text-emerald-700 font-extrabold text-sm border-2 border-yellow-400">
-                    불뿜기 대성공! 뿜뿜~ 🔥
+                    멋지게 완성했어요! ✨
                 </div>
             </div>
         </div>
@@ -90,13 +90,13 @@
         <!-- 안내 문구 -->
         <div class="w-full bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-1.5 border border-amber-300">
             <i class="fa-solid fa-paintbrush text-emerald-600 animate-pulse"></i>
-            <span>공룡(50점)과 배경(120점)을 멋지게 칠해봐요! 🦖🌊</span>
+            <span>공룡(50점), 배경포함(100점), 창의적표현(120점) 만점 도전! 🦖✨</span>
         </div>
 
         <!-- 컬러 팔레트 -->
         <div class="w-full bg-white p-2.5 rounded-xl shadow-sm border border-amber-200 flex flex-col gap-1">
             <div class="text-[11px] font-bold text-slate-500 px-1 flex justify-between items-center">
-                <span>🎨 색상 고르기</span>
+                <span>🎨 색상 고르기 (색 변경 시 별 소리 ✨)</span>
                 <span id="selectedColorIndicator" class="w-3.5 h-3.5 rounded-full inline-block border border-slate-300" style="background-color: #ef4444;"></span>
             </div>
             <div class="flex justify-between items-center gap-1 px-1">
@@ -141,9 +141,9 @@
         <div id="scoreModalCard" class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col gap-4">
             <div id="modalEmoji" class="text-6xl animate-bounce">🏆</div>
             <div>
-                <span id="praiseBadge" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full uppercase">창의력 대장 화가!</span>
+                <span id="praiseBadge" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full uppercase">채점 결과</span>
                 <h2 id="scoreValue" class="text-3xl font-black text-emerald-600 mt-2">120점</h2>
-                <p id="praiseMessage" class="text-slate-600 text-sm font-bold mt-2">공룡과 배경까지 완벽하게 칠해서 창의성 만점 120점 달성!</p>
+                <p id="praiseMessage" class="text-slate-600 text-sm font-bold mt-2">창의적으로 멋지게 꾸몄어요!</p>
             </div>
             <button onclick="closeScoreModal()" class="w-full py-3 bg-emerald-500 text-white font-bold rounded-xl transition">
                 계속 색칠하기 🎨
@@ -157,10 +157,11 @@
         let currentTool = 'brush';
         let brushSize = 25;
         let isDrawing = false;
+        let paintedPixelsCount = 0; // 채색량 체크용
 
         const colorCanvas = document.getElementById('colorCanvas');
         const outlineCanvas = document.getElementById('outlineCanvas');
-        const ctxColor = colorCanvas.getContext('2d');
+        const ctxColor = colorCanvas.getContext('2d', { willReadFrequently: true });
         const ctxOutline = outlineCanvas.getContext('2d');
 
         const dinoNames = [
@@ -181,7 +182,48 @@
             }
         }
 
-        // 스테이지 전환 뿅 소리
+        // ✨ 1. 색칠할 때(마우스/팬 클릭 및 드래그) 나는 별 반짝임 소리
+        let lastStarSoundTime = 0;
+        function playStarSound() {
+            try {
+                const now = Date.now();
+                if (now - lastStarSoundTime < 80) return; // 너무 자주 나지 않도록 간격 조절
+                lastStarSoundTime = now;
+
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1200 + Math.random() * 400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(2000, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } catch(e) {}
+        }
+
+        // 🎨 2. 색상 변경할 때 나는 뿅 소리
+        function playColorChangeSound() {
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        // 3. 스테이지 전환 소리
         function playSwitchSound() {
             try {
                 initAudio();
@@ -199,52 +241,55 @@
             } catch(e) {}
         }
 
-        // 🌟 100점 이상 달성 시: 별 반짝임 + 신나는 팡파레와 박수소리(노이즈 효과) 연출
-        function playApplauseAndFanfare() {
+        // 👏 4. 100점 달성 시 박수 소리 (화이트 노이즈 버스트)
+        function playClapSound() {
             try {
                 initAudio();
-                // 1. 팡파레 멜로디
-                const notes = [523.25, 659.25, 783.99, 1046.50]; 
-                notes.forEach((freq, index) => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.08));
-                    gain.gain.setValueAtTime(0.25, audioCtx.currentTime + (index * 0.08));
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (index * 0.08) + 0.2);
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + (index * 0.08));
-                    osc.stop(audioCtx.currentTime + (index * 0.08) + 0.2);
-                });
-
-                // 2. 박수소리 (화이트 노이즈 버스트 조합)
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 6; i++) {
                     setTimeout(() => {
                         if (!audioCtx) return;
-                        const bufferSize = audioCtx.sampleRate * 0.15;
+                        const bufferSize = audioCtx.sampleRate * 0.12;
                         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
                         const data = buffer.getChannelData(0);
                         for (let j = 0; j < bufferSize; j++) {
-                            data[j] = Math.random() * 2 - 1; // 화이트 노이즈
+                            data[j] = (Math.random() * 2 - 1) * Math.exp(-j / (bufferSize * 0.3));
                         }
                         const noise = audioCtx.createBufferSource();
                         noise.buffer = buffer;
-
                         const filter = audioCtx.createBiquadFilter();
                         filter.type = 'bandpass';
-                        filter.frequency.value = 1000; // 박수 소리 대역
+                        filter.frequency.value = 1200;
 
                         const gain = audioCtx.createGain();
-                        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
 
                         noise.connect(filter);
                         filter.connect(gain);
                         gain.connect(audioCtx.destination);
                         noise.start();
-                    }, 300 + (i * 100));
+                    }, i * 90);
                 }
+            } catch(e) {}
+        }
+
+        // 🎉 5. 120점 환호 사운드 (상승 음계 환호 멜로디)
+        function playCheerSound() {
+            try {
+                initAudio();
+                const cheerNotes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+                cheerNotes.forEach((freq, index) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.07));
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime + (index * 0.07));
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + (index * 0.07) + 0.25);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + (index * 0.07));
+                    osc.stop(audioCtx.currentTime + (index * 0.07) + 0.25);
+                });
             } catch(e) {}
         }
 
@@ -312,6 +357,7 @@
             const pos = getTouchPos(e); 
             ctxColor.beginPath(); 
             ctxColor.moveTo(pos.x, pos.y); 
+            playStarSound(); // 클릭/터치 시작할 때 별 소리 ✨
         }
 
         function draw(e) {
@@ -324,6 +370,8 @@
             ctxColor.lineCap = 'round';
             ctxColor.lineJoin = 'round';
             ctxColor.stroke();
+
+            playStarSound(); // 드래그하며 색칠할 때 별 소리 ✨
         }
         function stopDrawing() { isDrawing = false; }
 
@@ -334,9 +382,11 @@
         colorCanvas.addEventListener('touchmove', draw, { passive: false });
         window.addEventListener('touchend', stopDrawing);
 
+        // 색상 선택 변경 이벤트 (색 변경 시 뿅 소리 🎨)
         document.querySelectorAll('.color-bubble').forEach(bubble => {
             bubble.addEventListener('click', (e) => {
                 initAudio();
+                playColorChangeSound(); // 🎨 색 변경 소리
                 document.querySelectorAll('.color-bubble').forEach(b => b.classList.remove('active', 'ring-4', 'ring-emerald-400'));
                 e.target.classList.add('active', 'ring-4', 'ring-emerald-400');
                 currentColor = e.target.getAttribute('data-color');
@@ -368,19 +418,60 @@
             drawCurrentDinoAndBackground();
         }
 
-        // 완료 버튼 (100점이 넘었을 때 박수소리 및 팡파레 + 별 효과)
+        // 🏆 완료 버튼 클릭 시 채점 알고리즘 (50점 / 100점 / 120점)
         document.getElementById('toolComplete').addEventListener('click', () => {
-            playApplauseAndFanfare(); // 👏 박수소리 + 🌟 별 소리 효과
+            initAudio();
+
+            // 캔버스 픽셀 분석을 통해 색칠 상태 확인
+            const imageData = ctxColor.getImageData(0, 0, 500, 500);
+            const data = imageData.data;
+            let coloredPixels = 0;
+            for (let i = 3; i < data.length; i += 4) {
+                if (data[i] > 0) coloredPixels++; // 알파값이 0보다 크면 색칠된 것으로 판정
+            }
+
+            let score = 50;
+            let badgeText = "기본 색칠 화가!";
+            let msgText = "캐릭터를 예쁘게 잘 칠했어요! (50점)";
+            let emoji = "🦖";
+
+            if (coloredPixels > 15000) {
+                // 바탕까지 다 색칠한 경우 (100점 + 박수소리)
+                score = 100;
+                badgeText = "바탕까지 완벽 정복!";
+                msgText = "공룡과 배경까지 모두 꼼꼼하게 칠했어요! (100점)";
+                emoji = "👏";
+                playClapSound(); // 👏 박수 소리
+            }
+            if (coloredPixels > 35000) {
+                // 창의적으로 임의대로 다양하게 채워 넣은 경우 (120점 + 환호 사운드)
+                score = 120;
+                badgeText = "창의력 만점 천재 화가!";
+                msgText = "나만의 멋진 작품을 창의적으로 완성했어요! (120점 만점)";
+                emoji = "🎉";
+                playCheerSound(); // 🎉 환호 사운드
+            }
+
+            if (score === 50) {
+                playColorChangeSound(); // 기본 50점일 때 가벼운 완료음
+            }
+
+            // 모달창에 결과 반영
+            document.getElementById('scoreValue').innerText = score + "점";
+            document.getElementById('praiseBadge').innerText = badgeText;
+            document.getElementById('praiseMessage').innerText = msgText;
+            document.getElementById('modalEmoji').innerText = emoji;
 
             const overlay = document.getElementById('reactionOverlay');
             overlay.classList.remove('opacity-0', 'pointer-events-none');
             if (typeof confetti === 'function') {
-                confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+                confetti({ particleCount: score === 120 ? 180 : 100, spread: 90, origin: { y: 0.6 } });
             }
+
             setTimeout(() => {
                 overlay.classList.add('opacity-0', 'pointer-events-none');
                 document.getElementById('scoreModal').classList.remove('opacity-0', 'pointer-events-none');
-            }, 1400);
+            }, 1200);
         });
 
         function closeScoreModal() {
