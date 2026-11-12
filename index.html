@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Google Fonts -->
+    <!-- Google Fonts (Jua / Noto Sans KR) -->
     <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -23,21 +23,41 @@
             transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
         .color-bubble:hover, .color-bubble.active {
-            transform: scale(1.2);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            transform: scale(1.25);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            z-index: 10;
         }
-        @keyframes dinoAlive {
-            0% { transform: scale(1) translateY(0) rotate(0deg); }
-            50% { transform: scale(1.08) translateY(-12px) rotate(-3deg); }
-            100% { transform: scale(1) translateY(0) rotate(0deg); }
+        #canvasContainer {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
         }
-        .dino-alive-anim { animation: dinoAlive 3s ease-in-out infinite; }
+        /* 공룡 리액션 애니메이션 */
+        @keyframes dinoDance {
+            0%, 100% { transform: scale(1) rotate(0deg) translateY(0); }
+            20% { transform: scale(1.12) rotate(-12deg) translateY(-15px); }
+            40% { transform: scale(0.95) rotate(12deg) translateY(5px); }
+            60% { transform: scale(1.12) rotate(-8deg) translateY(-20px); }
+            80% { transform: scale(1.05) rotate(8deg) translateY(-5px); }
+        }
+        @keyframes dinoBurp {
+            0%, 100% { transform: scale(1) translateY(0); }
+            30% { transform: scale(1.25, 0.85) translateY(12px); filter: hue-rotate(45deg); }
+            60% { transform: scale(0.85, 1.2) translateY(-20px); }
+        }
+        @keyframes dinoFire {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(-5deg); filter: drop-shadow(0 0 20px rgba(255, 69, 0, 0.8)); }
+        }
+        .dino-dance { animation: dinoDance 1s infinite ease-in-out; }
+        .dino-burp { animation: dinoBurp 0.9s infinite ease-in-out; }
+        .dino-fire { animation: dinoFire 0.8s infinite ease-in-out; }
     </style>
 </head>
 <body class="bg-amber-50 text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <!-- START / HOME SCREEN -->
-    <div id="homeScreen" class="fixed inset-0 bg-gradient-to-b from-sky-300 via-amber-100 to-emerald-200 z-50 flex flex-col items-center justify-between p-6 transition-opacity duration-700 cursor-pointer">
+    <!-- 첫 화면 (홈) -->
+    <div id="homeScreen" class="fixed inset-0 bg-gradient-to-b from-sky-300 via-amber-100 to-emerald-200 z-50 flex flex-col items-center justify-between p-6 transition-opacity duration-700">
         <div class="w-full max-w-md flex justify-between items-center z-10">
             <button id="homeLangBtn" class="bg-white/80 hover:bg-white text-emerald-800 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5">
                 <span id="homeLangFlag">🇰🇷</span> <span id="homeLangText">한국어</span>
@@ -46,536 +66,533 @@
                 <button id="openRankingHomeBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5">
                     <i class="fa-solid fa-trophy"></i> 랭킹
                 </button>
-                <button id="bgmToggleBtn" class="bg-white/80 hover:bg-white text-amber-700 px-3.5 py-1.5 rounded-full font-bold text-sm shadow-md border border-white flex items-center gap-1.5">
-                    <i id="bgmIcon" class="fa-solid fa-music text-emerald-600"></i> <span id="bgmLabel">음악 켜짐</span>
-                </button>
             </div>
         </div>
 
         <div class="text-center z-10 my-auto">
-            <div class="inline-block bg-white/95 px-6 py-3 rounded-full shadow-lg border-2 border-yellow-300 mb-3 animate-bounce">
-                <span class="text-xs sm:text-sm font-extrabold text-amber-600">✨ AI 정밀 그림 검수 시스템 탑재</span>
+            <div class="inline-block bg-white/95 px-6 py-3 rounded-full shadow-lg border-2 border-yellow-300 mb-4 animate-bounce">
+                <span class="text-xs sm:text-sm font-extrabold text-amber-600 tracking-wider">알록달록 AI 공룡 월드</span>
             </div>
-            <h1 id="homeTitle" class="text-3xl sm:text-5xl font-black text-emerald-700 drop-shadow-md leading-tight">
+            <h1 class="text-3xl sm:text-5xl font-black text-emerald-700 drop-shadow-md tracking-wide leading-tight">
                 귀여운 공룡 색칠놀이 🎨
             </h1>
-            <p id="homeSubtitle" class="text-slate-600 text-sm sm:text-base font-bold mt-2">
-                터치해서 예쁘게 칠하고 AI 검수를 받아보세요!
+            <p class="text-slate-600 text-sm sm:text-base font-bold mt-3">
+                터치해서 공룡 친구들을 만나러 가요!
             </p>
         </div>
 
-        <div class="w-full max-w-xs z-10 mb-4">
-            <button id="startGameBtn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white text-xl sm:text-2xl font-black rounded-3xl shadow-xl border-4 border-yellow-300 flex items-center justify-center gap-3 animate-pulse">
-                <i class="fa-solid fa-play text-yellow-300"></i> <span id="startBtnText">게임 시작하기 🚀</span>
+        <div class="w-full max-w-xs z-10 mb-6">
+            <button id="startGameBtn" class="w-full py-4 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white text-xl sm:text-2xl font-black rounded-3xl shadow-xl border-4 border-yellow-300 transform active:scale-95 transition flex items-center justify-center gap-3 animate-pulse">
+                <i class="fa-solid fa-play text-yellow-300"></i> <span id="startBtnText">게임 시작하기 🎨</span>
             </button>
         </div>
     </div>
 
-    <!-- Header -->
+    <!-- 상단 헤더 -->
     <header class="bg-emerald-500 text-white shadow-md p-3 sm:p-4 text-center sticky top-0 z-20 rounded-b-2xl">
         <div class="max-w-md mx-auto flex justify-between items-center px-2">
             <div class="flex items-center gap-2">
-                <button id="mainHomeBtn" class="bg-emerald-600 text-white w-9 h-9 rounded-full border border-emerald-400 flex items-center justify-center shadow-sm" title="홈으로">
+                <button id="mainHomeBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white w-9 h-9 rounded-full border border-emerald-400 flex items-center justify-center shadow-sm active:scale-95 transition" title="홈으로">
                     <i class="fa-solid fa-house text-sm"></i>
                 </button>
-                <h1 class="text-lg sm:text-xl font-bold flex items-center gap-1.5">
-                    <i class="fa-solid fa-dragon text-yellow-300"></i> <span id="appHeaderTitle">귀여운 공룡 색칠놀이</span>
+                <h1 class="text-lg sm:text-2xl font-bold flex items-center gap-1.5 tracking-wide">
+                    <i class="fa-solid fa-dragon text-yellow-300"></i> <span id="appHeaderTitle">공룡 색칠놀이</span>
                 </h1>
             </div>
             <div class="flex items-center gap-2">
-                <button id="openRankingHeaderBtn" class="bg-yellow-400 text-yellow-900 text-xs px-2.5 py-1.5 rounded-full font-bold shadow-sm flex items-center gap-1">
+                <button id="openRankingHeaderBtn" class="bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-xs sm:text-sm px-2.5 py-1.5 rounded-full font-bold shadow-sm transition active:scale-95 flex items-center gap-1">
                     <i class="fa-solid fa-trophy"></i> 랭킹
                 </button>
-                <button id="langToggleBtn" class="bg-emerald-600 text-xs px-3 py-1.5 rounded-full border border-emerald-400 text-yellow-200 font-bold flex items-center gap-1">
+                <button id="langToggleBtn" class="bg-emerald-600 hover:bg-emerald-700 text-xs sm:text-sm px-3 py-1.5 rounded-full border border-emerald-400 text-yellow-200 font-bold transition flex items-center gap-1 shadow-sm active:scale-95">
                     <span id="langFlag">🇰🇷</span> <span id="langLabel">한국어</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Workspace -->
+    <!-- 메인 작업 영역 -->
     <main class="flex-1 max-w-md w-full mx-auto p-3 sm:p-4 flex flex-col justify-center items-center gap-3">
+        <!-- 공룡 선택 및 이동 바 -->
         <div class="w-full flex justify-between items-center bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-amber-200">
-            <button id="prevBtn" class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm flex items-center gap-1">
+            <button id="prevBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm transition active:scale-95 flex items-center gap-1">
                 <i class="fa-solid fa-chevron-left"></i> <span id="prevBtnText">이전</span>
             </button>
             <div class="text-center">
                 <span id="dinoName" class="text-base sm:text-lg font-bold text-emerald-700">1. 티라노사우루스</span>
             </div>
-            <button id="nextBtn" class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm flex items-center gap-1">
+            <button id="nextBtn" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1.5 rounded-xl font-bold text-sm transition active:scale-95 flex items-center gap-1">
                 <span id="nextBtnText">다음</span> <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
 
+        <!-- 캔버스 컨테이너 (레이어 분리로 선 안 지워짐 보장) -->
         <div id="canvasContainer" class="relative w-full aspect-square bg-white rounded-3xl shadow-lg border-4 border-amber-300 overflow-hidden flex items-center justify-center">
+            <!-- 색칠 레이어 (하단: 선 아래에 칠해짐) -->
             <canvas id="colorCanvas" class="absolute inset-0 w-full h-full cursor-crosshair touch-none"></canvas>
+            <!-- 공룡 외곽선 레이어 (상단: 절대 지워지지 않음) -->
             <canvas id="outlineCanvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
-            <div id="aiOverlay" class="absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-700 bg-gradient-to-tr from-yellow-200/20 via-pink-200/20 to-cyan-200/20 flex items-center justify-center z-10">
-                <div class="text-yellow-400 text-4xl animate-bounce">🔍 AI 정밀 검수 중...</div>
-            </div>
-            <div id="canvasLoader" class="absolute inset-0 bg-white/90 flex flex-col items-center justify-center gap-2 hidden z-20">
-                <div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-                <span id="loaderText" class="text-sm font-bold text-emerald-700">공룡 불러오는 중...</span>
+            
+            <!-- 리액션 및 효과 오버레이 -->
+            <div id="reactionOverlay" class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center transition-all duration-500 opacity-0 z-10 bg-black/10">
+                <div id="reactionEmoji" class="text-6xl sm:text-7xl animate-bounce mb-2">🔥</div>
+                <div id="reactionText" class="bg-white/95 px-5 py-2 rounded-2xl shadow-xl text-emerald-700 font-extrabold text-lg sm:text-xl border-2 border-yellow-400">
+                    불뿜기 대성공! 뿜뿜~ 🔥
+                </div>
             </div>
         </div>
 
+        <!-- 안내 문구 -->
         <div id="voiceFeedbackBadge" class="w-full bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-2 border border-amber-300">
-            <i class="fa-solid fa-robot text-emerald-600 animate-pulse"></i>
-            <span id="voiceStatusText">색칠을 마친 후 'AI 그림 검수' 버튼을 누르세요! 🐣</span>
+            <i class="fa-solid fa-paintbrush text-emerald-600 animate-pulse"></i>
+            <span id="voiceStatusText">알록달록 예쁜 색으로 공룡을 색칠해봐요! 🦖</span>
         </div>
 
-        <div class="w-full bg-white p-2.5 rounded-2xl shadow-sm border border-amber-200 flex flex-col gap-2 text-xs sm:text-sm">
-            <div class="flex justify-around items-center gap-1">
-                <button id="toolBrush" class="tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-emerald-500 text-white shadow-md">
+        <!-- 컬러 팔레트 (색상 선택) -->
+        <div class="w-full bg-white p-3 rounded-2xl shadow-sm border border-amber-200 flex flex-col gap-2">
+            <div class="text-xs font-bold text-slate-500 px-1 flex justify-between items-center">
+                <span>🎨 색상 고르기</span>
+                <span id="selectedColorIndicator" class="w-4 h-4 rounded-full inline-block border border-slate-300" style="background-color: #ef4444;"></span>
+            </div>
+            <div class="flex justify-between items-center gap-1 px-1">
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-red-500 active" data-color="#ef4444"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-orange-500" data-color="#f97316"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-yellow-400" data-color="#facc15"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-green-500" data-color="#22c55e"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-blue-500" data-color="#3b82f6"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-indigo-500" data-color="#6366f1"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-purple-500" data-color="#a855f7"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-pink-500" data-color="#ec4899"></div>
+                <div class="color-bubble w-7 h-7 sm:w-8 sm:h-8 rounded-full cursor-pointer border-2 border-white shadow active scale-95 bg-amber-800" data-color="#92400e"></div>
+            </div>
+        </div>
+
+        <!-- 하단 도구 및 완료 버튼 -->
+        <div class="w-full bg-white p-2.5 rounded-2xl shadow-sm border border-amber-200 flex flex-col gap-2">
+            <div class="flex justify-around items-center gap-1.5">
+                <button id="toolBrush" class="tool-btn flex-1 py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-emerald-500 text-white shadow-md">
                     <i class="fa-solid fa-paintbrush text-base"></i> <span id="btnBrushText">쓱쓱 붓</span>
                 </button>
-                <button id="toolEraser" class="tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-slate-100 text-slate-700">
-                    <i class="fa-solid fa-eraser text-base text-pink-500"></i> <span id="btnEraserText">지우개</span>
+                <button id="toolEraser" class="tool-btn flex-1 py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-eraser text-base"></i> <span id="btnEraserText">지우개</span>
                 </button>
-                <button id="resetBtn" class="flex-1 py-2 rounded-xl font-bold text-slate-700 bg-slate-100 flex flex-col items-center gap-1">
-                    <i class="fa-solid fa-rotate-left text-base text-amber-600"></i> <span id="btnResetText">다시하기</span>
+                <button id="toolReset" class="tool-btn flex-1 py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-slate-100 text-slate-600 hover:bg-slate-200">
+                    <i class="fa-solid fa-rotate-right text-base"></i> <span id="btnResetText">다시하기</span>
                 </button>
-                <button id="finishBtn" class="flex-1 py-2 rounded-xl font-bold text-white bg-gradient-to-r from-amber-400 to-orange-500 flex flex-col items-center gap-1 shadow-md animate-pulse">
-                    <i class="fa-solid fa-magnifying-glass-chart text-base text-yellow-200"></i> <span id="btnFinishText">AI 그림 검수</span>
+                <!-- 완료 버튼 -->
+                <button id="toolComplete" class="tool-btn flex-[1.3] py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-yellow-950 shadow-lg border border-yellow-300">
+                    <i class="fa-solid fa-star text-base animate-spin"></i> <span id="btnCompleteText">완료! 🌟</span>
                 </button>
             </div>
-            <div class="flex items-center gap-3 px-2 pt-1 border-t border-slate-100">
-                <span id="labelBrushSize" class="font-bold text-slate-600 shrink-0">붓 두께:</span>
-                <input type="range" id="brushSize" min="8" max="50" value="25" class="w-full accent-emerald-500 cursor-pointer">
-                <span id="brushSizeVal" class="w-6 text-center font-bold text-emerald-600 shrink-0">25</span>
-            </div>
-        </div>
-
-        <div class="w-full bg-white p-3 rounded-2xl shadow-sm border border-amber-200">
-            <div id="paletteGrid" class="flex flex-wrap justify-between items-center gap-2"></div>
-            <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between px-1">
-                <span id="labelCustomColor" class="text-xs font-bold text-slate-500">원하는 색 직접 고르기:</span>
-                <input type="color" id="customColor" value="#ff4757" class="w-8 h-8 rounded-lg cursor-pointer border-none bg-transparent">
+            <!-- 붓 두께 슬라이더 -->
+            <div class="flex items-center gap-3 px-2 pt-1">
+                <span class="text-xs font-bold text-slate-500 whitespace-nowrap" id="brushSizeLabel">붓 두께:</span>
+                <input type="range" id="brushSizeRange" min="10" max="50" value="25" class="w-full accent-emerald-500 cursor-pointer">
             </div>
         </div>
     </main>
 
-    <!-- Inspection / Score Modal -->
-    <div id="scoreModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div id="scoreModalCard" class="bg-white rounded-3xl p-5 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col items-center gap-2.5 max-h-[90vh] overflow-y-auto">
-            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center text-3xl mb-0.5 shadow-inner text-yellow-500" id="modalEmoji">📋</div>
-            <span id="praiseBadge" class="inline-block bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-0.5">🔍 AI 검수 완료!</span>
-            <h3 id="scoreValue" class="text-3xl font-extrabold text-slate-800">100점</h3>
-            
-            <div class="w-full bg-emerald-50 p-3 rounded-2xl border border-emerald-200 text-left flex flex-col gap-1 text-xs">
-                <div class="font-bold text-emerald-800 border-b border-emerald-200 pb-1 mb-1 flex items-center gap-1">
-                    <i class="fa-solid fa-clipboard-check"></i> 정밀 검수 리포트
-                </div>
-                <div id="inspectionDetails" class="text-slate-700 font-semibold leading-relaxed">
-                    • 채색 완성도: 우수함<br>
-                    • 선 벗어남 방지: 완벽<br>
-                    • 창의적 색상 조화: 매우 훌륭함
-                </div>
+    <!-- 점수 및 리액션 결과 모달 -->
+    <div id="scoreModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="scoreModalCard" class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col gap-4">
+            <div id="modalEmoji" class="text-6xl animate-bounce">🏆</div>
+            <div>
+                <span id="praiseBadge" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">최고의 화가!</span>
+                <h2 id="scoreValue" class="text-3xl font-black text-emerald-600 mt-2">100점</h2>
+                <p id="praiseMessage" class="text-slate-600 text-sm font-bold mt-2">공룡이 너무 신나서 멋진 리액션을 보여줬어요!</p>
             </div>
-
-            <p id="praiseMessage" class="text-slate-600 text-xs font-semibold leading-relaxed px-1">"AI 검수관: 공룡의 디테일까지 아주 예쁘게 잘 칠해주었어요!"</p>
-            
-            <div id="rankingInputContainer" class="w-full bg-amber-50 p-2.5 rounded-2xl border border-amber-200 flex flex-col gap-1.5">
-                <span class="text-xs font-bold text-amber-800">🏆 검수 통과! 랭킹에 등록해보세요</span>
-                <div class="flex gap-2">
-                    <input type="text" id="playerNameInput" placeholder="이름 (예: 꼬마 화가)" maxlength="10" class="flex-1 px-3 py-1.5 text-xs border rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white">
-                    <button id="saveRankingBtn" class="bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow-sm">등록</button>
-                </div>
-            </div>
-
-            <div class="w-full flex flex-col gap-1.5">
-                <button id="downloadImgBtn" class="w-full py-2 bg-sky-500 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                    <i class="fa-solid fa-download"></i> 검수된 그림 저장하기
+            <!-- 랭킹 등록 폼 -->
+            <div id="rankingInputContainer" class="flex flex-col gap-2 pt-2 border-t border-slate-100">
+                <input type="text" id="playerNameInput" placeholder="이름을 입력하세요 (예: 튼튼이)" class="w-full px-4 py-2.5 rounded-xl border-2 border-emerald-300 focus:outline-none focus:border-emerald-500 font-bold text-center text-sm">
+                <button onclick="saveCurrentScoreToRanking()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-xl shadow-md transition active:scale-95">
+                    랭킹에 이름 올리기 🚀
                 </button>
             </div>
+            <button onclick="closeScoreModal()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">
+                계속 색칠하기 🎨
+            </button>
+        </div>
+    </div>
 
-            <div class="w-full flex gap-2 mt-1">
-                <button id="modalCloseBtn" class="flex-1 py-2 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs">다시 칠하기</button>
-                <button id="modalNextBtn" class="flex-1 py-2 bg-emerald-500 text-white font-bold rounded-xl text-xs shadow-md">다음 공룡 보기 ➔</button>
+    <!-- 랭킹 보드 모달 -->
+    <div id="rankingModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="rankingModalCard" class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col gap-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h2 class="text-xl font-black text-emerald-700 flex items-center gap-2"><i class="fa-solid fa-trophy text-yellow-400"></i> 명예의 랭킹</h2>
+                <button onclick="closeRankingModal()" class="text-slate-400 hover:text-slate-600 font-bold text-lg"><i class="fa-solid fa-xmark"></i></button>
             </div>
+            <div id="rankingListContainer" class="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
+                <!-- 동적 랭킹 목록 -->
+            </div>
+            <button onclick="closeRankingModal()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-md transition">
+                닫기
+            </button>
         </div>
     </div>
-
-    <!-- Ranking Modal -->
-    <div id="rankingModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div id="rankingModalCard" class="bg-white rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl border-4 border-yellow-300 transform scale-90 transition-transform duration-300 flex flex-col items-center gap-3">
-            <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center text-2xl shadow-inner text-yellow-500">👑</div>
-            <h3 class="text-xl font-extrabold text-slate-800">명예의 전당 랭킹 (Top 10)</h3>
-            <div id="rankingListContainer" class="w-full max-h-60 overflow-y-auto flex flex-col gap-1.5 text-left text-xs font-semibold text-slate-700 pr-1"></div>
-            <button id="closeRankingBtn" class="w-full py-2.5 bg-emerald-500 text-white font-bold rounded-xl text-sm shadow-md mt-1">닫기</button>
-        </div>
-    </div>
-
-    <footer class="text-center py-2 text-xs text-amber-700 font-medium">© 2026 귀여운 공룡 색칠놀이 AI • 아이용 미니 앱</footer>
 
     <script>
-        const COLORS = ['#ff4757', '#ffa502', '#eccc68', '#2ed573', '#1e90ff', '#70a1ff', '#5352ed', '#a4b0be', '#ff78ae', '#9b59b6', '#8e44ad', '#1abc9c', '#d35400', '#2c3e50', '#ffffff'];
-        let currentLang = 'ko', currentDinoIndex = 0, currentColor = COLORS[0], currentMode = 'brush', brushSize = 25, isDrawing = false, isBgmPlaying = false, bgmInterval = null;
-        let lastScore = 0;
-
+        // --- 데이터 및 언어 설정 ---
         const TRANSLATIONS = {
             ko: {
-                title: "귀여운 공룡 색칠놀이", homeTitle: "귀여운 공룡 색칠놀이 🎨", homeSub: "터치해서 예쁘게 칠하고 AI 검수를 받아보세요!", startBtn: "게임 시작하기 🚀",
-                bgmOn: "음악 켜짐", bgmOff: "음악 꺼짐", brush: "쓱쓱 붓", eraser: "지우개", reset: "다시하기", finish: "AI 그림 검수",
-                brushSize: "붓 두께:", customColor: "원하는 색 직접 고르기:", prev: "이전", next: "다음", statusDefault: "색칠을 마친 후 'AI 그림 검수' 버튼을 누르세요! 🐣",
-                retryBtn: "다시 칠하기", nextDinoBtn: "다음 공룡 보기 ➔", 
-                dinoNames: ["1. 티라노사우루스", "2. 트리케라톱스", "3. 브라키오사우루스", "4. 벨로키라프토르", "5. 스테고사우루스", "6. 앙킬로사우루스", "7. 프테라노돈", "8. 파라사우롤로푸스", "9. 스피노사우루스", "10. 아기 공룡알"]
+                appHeaderTitle: "공룡 색칠놀이",
+                startBtnText: "게임 시작하기 🎨",
+                homeSubtitle: "터치해서 공룡 친구들을 만나러 가요!",
+                prevBtn: "이전",
+                nextBtn: "다음",
+                btnBrushText: "쓱쓱 붓",
+                btnEraserText: "지우개",
+                btnResetText: "다시하기",
+                btnCompleteText: "완료! 🌟",
+                brushSizeLabel: "붓 두께:",
+                voiceStatusText: "알록달록 예쁜 색으로 공룡을 색칠해봐요! 🦖",
+                dinoNames: [
+                    "1. 티라노사우루스",
+                    "2. 트리케라톱스",
+                    "3. 브라키오사우루스",
+                    "4. 프테라노돈",
+                    "5. 스테고사우루스"
+                ],
+                praiseHigh: "최고의 화가!",
+                praiseLow: "훌륭해요!",
+                msgHigh: "공룡이 신나서 불뿜기, 방귀, 댄스 리액션을 폭발시켰어요!",
+                msgLow: "예쁘게 잘 칠했어요! 조금 더 채워볼까요?"
             },
             en: {
-                title: "Cute Dino Coloring", homeTitle: "Cute Dino Coloring 🎨", homeSub: "Color nicely and get AI inspection!", startBtn: "Start Game 🚀",
-                bgmOn: "BGM On", bgmOff: "BGM Off", brush: "Brush", eraser: "Eraser", reset: "Reset", finish: "AI Inspect",
-                brushSize: "Brush Size:", customColor: "Pick Color:", prev: "Prev", next: "Next", statusDefault: "Tap 'AI Inspect' after coloring! 🐣",
-                retryBtn: "Color Again", nextDinoBtn: "Next Dino ➔",
-                dinoNames: ["1. T-Rex", "2. Triceratops", "3. Brachiosaurus", "4. Velociraptor", "5. Stegosaurus", "6. Ankylosaurus", "7. Pteranodon", "8. Parasaurolophus", "9. Spinosaurus", "10. Baby Dino"]
+                appHeaderTitle: "Dino Coloring",
+                startBtnText: "Start Game 🎨",
+                homeSubtitle: "Touch to meet cute dinosaur friends!",
+                prevBtn: "Prev",
+                nextBtn: "Next",
+                btnBrushText: "Brush",
+                btnEraserText: "Eraser",
+                btnResetText: "Reset",
+                btnCompleteText: "Done! 🌟",
+                brushSizeLabel: "Size:",
+                voiceStatusText: "Color the dinosaur with beautiful colors! 🦖",
+                dinoNames: [
+                    "1. Tyrannosaurus",
+                    "2. Triceratops",
+                    "3. Brachiosaurus",
+                    "4. Pteranodon",
+                    "5. Stegosaurus"
+                ],
+                praiseHigh: "Master Painter!",
+                praiseLow: "Great Job!",
+                msgHigh: "The dinosaur went wild with fire, burp & dance reactions!",
+                msgLow: "You colored it nicely! Want to fill more?"
             }
         };
 
-        const DINOSAURS = [0,1,2,3,4,5,6,7,8,9];
+        let currentLang = 'ko';
+        let currentDinoIndex = 0;
+        let currentColor = '#ef4444';
+        let currentTool = 'brush'; // 'brush' or 'eraser'
+        let brushSize = 25;
+        let isDrawing = false;
+        let lastScore = 100;
 
-        function getDinoSVG(index) {
-            const eyePart = `<circle cx="215" cy="175" r="14" fill="none" stroke="black" stroke-width="4"/><circle cx="218" cy="172" r="5" fill="black"/>`;
-            let bodyPath = '';
-            switch(index) {
-                case 0: bodyPath = `<path d="M 170,120 C 230,100 290,140 280,210 C 275,250 250,280 230,330 C 210,380 200,430 250,430 L 210,430 C 170,430 150,380 140,340 C 110,360 80,360 50,320 C 90,300 130,300 150,280 C 140,240 145,180 170,120 Z" fill="none" stroke="black" stroke-width="7" stroke-linejoin="round"/><path d="M 280,180 L 320,185 L 280,205 Z" fill="none" stroke="black" stroke-width="5"/>`; break;
-                case 1: bodyPath = `<path d="M 180,150 C 130,110 90,160 140,220 C 120,260 110,330 160,390 L 190,430 L 230,430 L 250,370 C 310,370 340,310 320,250 C 300,190 240,160 180,150 Z" fill="none" stroke="black" stroke-width="7"/><path d="M 130,170 L 80,140 L 120,190 Z" fill="none" stroke="black" stroke-width="6"/>`; break;
-                case 2: bodyPath = `<path d="M 200,80 Q 250,90 230,150 Q 200,250 220,330 L 260,430 L 210,430 L 180,360 C 130,360 100,320 60,300 C 110,290 140,270 150,240 Q 140,150 200,80 Z" fill="none" stroke="black" stroke-width="7"/>`; break;
-                case 3: bodyPath = `<path d="M 190,130 C 260,110 300,160 270,220 Q 240,280 230,350 L 270,430 L 220,430 L 200,360 C 150,370 100,340 40,280 C 100,270 140,260 160,220 Q 150,170 190,130 Z" fill="none" stroke="black" stroke-width="7"/>`; break;
-                case 4: bodyPath = `<path d="M 150,200 C 220,150 320,200 330,280 C 340,340 280,390 230,410 L 240,440 L 200,440 L 190,400 C 140,400 110,360 80,310 Q 110,240 150,200 Z" fill="none" stroke="black" stroke-width="7"/><path d="M 170,180 L 190,120 L 210,175 M 230,170 L 260,110 L 280,175" fill="none" stroke="black" stroke-width="6"/>`; break;
-                case 5: bodyPath = `<path d="M 130,220 Q 250,160 350,230 Q 360,320 280,380 L 290,430 L 250,430 L 240,380 C 180,380 140,350 90,300 Q 100,250 130,220 Z" fill="none" stroke="black" stroke-width="7"/><circle cx="360" cy="270" r="22" fill="none" stroke="black" stroke-width="6"/>`; break;
-                case 6: bodyPath = `<path d="M 230,160 Q 330,120 440,160 Q 320,230 250,240 Q 180,230 60,160 Q 170,120 230,160 Z" fill="none" stroke="black" stroke-width="7"/><path d="M 210,150 L 160,90 L 230,130 Z" fill="none" stroke="black" stroke-width="6"/>`; break;
-                case 7: bodyPath = `<path d="M 200,140 C 260,130 280,180 260,240 Q 230,300 220,360 L 250,430 L 210,430 L 190,360 C 140,360 110,310 60,280 C 110,270 140,250 160,210 Z" fill="none" stroke="black" stroke-width="7"/><path d="M 200,140 C 240,70 310,60 340,90 C 310,120 250,120 220,150 Z" fill="none" stroke="black" stroke-width="6"/>`; break;
-                case 8: bodyPath = `<path d="M 170,190 C 240,160 320,200 310,280 C 300,340 260,380 220,410 L 230,440 L 190,440 L 180,400 C 130,400 100,350 70,300 Q 120,240 170,190 Z" fill="none" stroke="black" stroke-width="7"/><path d="M 180,180 C 200,90 280,90 310,190 Z" fill="none" stroke="black" stroke-width="6"/>`; break;
-                case 9: bodyPath = `<path d="M 140,260 C 140,160 360,160 360,260 C 360,380 140,380 140,260 Z" fill="none" stroke="black" stroke-width="7"/><path d="M 140,260 L 180,230 L 220,270 L 270,220 L 310,260 L 360,240" fill="none" stroke="black" stroke-width="6"/>`; break;
-            }
-            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="500" height="500">${bodyPath}${eyePart}</svg>`;
-        }
-
-        let audioCtx = null;
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-        }
-
-        function playSparkleSound() {
-            initAudio();
-            const now = audioCtx.currentTime;
-            [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(freq, now + i * 0.05);
-                gain.gain.setValueAtTime(0.06, now + i * 0.05);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.15);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start(now + i * 0.05);
-                osc.stop(now + i * 0.05 + 0.15);
-            });
-        }
-
-        function setLanguage(lang) {
-            currentLang = lang;
-            const t = TRANSLATIONS[lang];
-            document.getElementById('homeLangFlag').textContent = lang === 'ko' ? '🇰🇷' : '🇺🇸';
-            document.getElementById('homeLangText').textContent = lang === 'ko' ? '한국어' : 'English';
-            document.getElementById('langFlag').textContent = lang === 'ko' ? '🇰🇷' : '🇺🇸';
-            document.getElementById('langLabel').textContent = lang === 'ko' ? '한국어' : 'English';
-            document.getElementById('homeTitle').textContent = t.homeTitle;
-            document.getElementById('homeSubtitle').textContent = t.homeSub;
-            document.getElementById('startBtnText').textContent = t.startBtn;
-            document.getElementById('appHeaderTitle').textContent = t.title;
-            document.getElementById('btnBrushText').textContent = t.brush;
-            document.getElementById('btnEraserText').textContent = t.eraser;
-            document.getElementById('btnResetText').textContent = t.reset;
-            document.getElementById('btnFinishText').textContent = t.finish;
-            document.getElementById('labelBrushSize').textContent = t.brushSize;
-            document.getElementById('labelCustomColor').textContent = t.customColor;
-            document.getElementById('prevBtnText').textContent = t.prev;
-            document.getElementById('nextBtnText').textContent = t.next;
-            document.getElementById('voiceStatusText').textContent = t.statusDefault;
-            document.getElementById('modalCloseBtn').textContent = t.retryBtn;
-            document.getElementById('modalNextBtn').textContent = t.nextDinoBtn;
-            document.getElementById('dinoName').textContent = t.dinoNames[currentDinoIndex];
-        }
-
+        const homeScreen = document.getElementById('homeScreen');
+        const startGameBtn = document.getElementById('startGameBtn');
         const colorCanvas = document.getElementById('colorCanvas');
         const outlineCanvas = document.getElementById('outlineCanvas');
-        const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true });
-        const outlineCtx = outlineCanvas.getContext('2d');
-        const homeScreen = document.getElementById('homeScreen');
-        const aiOverlay = document.getElementById('aiOverlay');
-        const canvasLoader = document.getElementById('canvasLoader');
-        const scoreModal = document.getElementById('scoreModal');
-        const scoreModalCard = document.getElementById('scoreModalCard');
-        const rankingModal = document.getElementById('rankingModal');
+        const ctxColor = colorCanvas.getContext('2d');
+        const ctxOutline = outlineCanvas.getContext('2d');
 
-        window.addEventListener('DOMContentLoaded', () => {
-            initPalette();
-            resizeCanvas();
-            loadDinosaur(currentDinoIndex);
-
-            colorCanvas.addEventListener('pointerdown', startDrawing);
-            colorCanvas.addEventListener('pointermove', draw);
-            colorCanvas.addEventListener('pointerup', stopDrawing);
-            colorCanvas.addEventListener('pointerleave', stopDrawing);
-
-            homeScreen.addEventListener('click', startGame);
-            document.getElementById('startGameBtn').addEventListener('click', (e) => { e.stopPropagation(); startGame(); });
-            document.getElementById('mainHomeBtn').addEventListener('click', () => { homeScreen.style.opacity = '1'; homeScreen.style.pointerEvents = 'auto'; });
-            document.getElementById('homeLangBtn').addEventListener('click', (e) => { e.stopPropagation(); setLanguage(currentLang === 'ko' ? 'en' : 'ko'); });
-            document.getElementById('langToggleBtn').addEventListener('click', () => setLanguage(currentLang === 'ko' ? 'en' : 'ko'));
-
-            document.getElementById('openRankingHomeBtn').addEventListener('click', (e) => { e.stopPropagation(); showRankingBoard(); });
-            document.getElementById('openRankingHeaderBtn').addEventListener('click', () => showRankingBoard());
-            document.getElementById('closeRankingBtn').addEventListener('click', () => rankingModal.classList.add('opacity-0', 'pointer-events-none'));
-
-            document.getElementById('toolBrush').addEventListener('click', () => { setMode('brush'); playSparkleSound(); });
-            document.getElementById('toolEraser').addEventListener('click', () => { setMode('eraser'); playSparkleSound(); });
-            document.getElementById('resetBtn').addEventListener('click', resetColoring);
-            document.getElementById('finishBtn').addEventListener('click', triggerAIInspection);
-
-            document.getElementById('brushSize').addEventListener('input', (e) => {
-                brushSize = parseInt(e.target.value, 10);
-                document.getElementById('brushSizeVal').textContent = brushSize;
-            });
-
-            document.getElementById('prevBtn').addEventListener('click', () => changeDino(-1));
-            document.getElementById('nextBtn').addEventListener('click', () => changeDino(1));
-            document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-            document.getElementById('modalNextBtn').addEventListener('click', () => { closeModal(); changeDino(1); });
-
-            document.getElementById('saveRankingBtn').addEventListener('click', saveCurrentScoreToRanking);
-            document.getElementById('downloadImgBtn').addEventListener('click', downloadCanvasImage);
-
-            document.getElementById('customColor').addEventListener('input', (e) => {
-                currentColor = e.target.value;
-                setMode('brush');
-                playSparkleSound();
-            });
-
-            window.addEventListener('resize', resizeCanvas);
-            setLanguage('ko');
-        });
-
-        function startGame() {
-            homeScreen.style.opacity = '0';
-            homeScreen.style.pointerEvents = 'none';
+        // 캔버스 크기 초기화
+        function initCanvasSize() {
+            const size = 500;
+            colorCanvas.width = size;
+            colorCanvas.height = size;
+            outlineCanvas.width = size;
+            outlineCanvas.height = size;
+            drawCurrentDinoOutline();
         }
 
-        function resizeCanvas() {
-            colorCanvas.width = 500; colorCanvas.height = 500;
-            outlineCanvas.width = 500; outlineCanvas.height = 500;
-        }
+        // 공룡 외곽선 그리기 (레이어 분리로 절대 지워지지 않음)
+        function drawCurrentDinoOutline() {
+            ctxOutline.clearRect(0, 0, outlineCanvas.width, outlineCanvas.height);
+            ctxOutline.strokeStyle = '#1e293b';
+            ctxOutline.lineWidth = 8;
+            ctxOutline.lineCap = 'round';
+            ctxOutline.lineJoin = 'round';
 
-        function initPalette() {
-            const paletteGrid = document.getElementById('paletteGrid');
-            paletteGrid.innerHTML = '';
-            COLORS.forEach((color, index) => {
-                const bubble = document.createElement('button');
-                bubble.className = `color-bubble w-8 h-8 sm:w-9 sm:h-9 rounded-full border-2 border-white shadow-sm flex items-center justify-center ${index === 0 ? 'active ring-2 ring-emerald-500' : ''}`;
-                bubble.style.backgroundColor = color;
-                bubble.addEventListener('click', () => {
-                    currentColor = color;
-                    setMode('brush');
-                    document.querySelectorAll('.color-bubble').forEach(b => b.classList.remove('active', 'ring-2', 'ring-emerald-500'));
-                    bubble.classList.add('active', 'ring-2', 'ring-emerald-500');
-                    playSparkleSound();
-                });
-                paletteGrid.appendChild(bubble);
-            });
-        }
-
-        function setMode(mode) {
-            currentMode = mode;
-            if (mode === 'brush') {
-                document.getElementById('toolBrush').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-emerald-500 text-white shadow-md";
-                document.getElementById('toolEraser').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-slate-100 text-slate-700";
-            } else {
-                document.getElementById('toolEraser').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-pink-500 text-white shadow-md";
-                document.getElementById('toolBrush').className = "tool-btn flex-1 py-2 rounded-xl font-bold flex flex-col items-center gap-1 bg-slate-100 text-slate-700";
-            }
-        }
-
-        function changeDino(dir) {
-            currentDinoIndex = (currentDinoIndex + dir + DINOSAURS.length) % DINOSAURS.length;
-            loadDinosaur(currentDinoIndex);
-        }
-
-        function loadDinosaur(index) {
-            canvasLoader.classList.remove('hidden');
-            aiOverlay.style.opacity = '0';
-            resetColoring();
-            document.getElementById('dinoName').textContent = TRANSLATIONS[currentLang].dinoNames[index];
-
-            const img = new Image();
-            const svgString = getDinoSVG(index);
-            const encodedSvg = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString);
+            ctxOutline.beginPath();
+            const cx = 250, cy = 250;
             
-            img.onload = () => {
-                outlineCtx.clearRect(0, 0, outlineCanvas.width, outlineCanvas.height);
-                outlineCtx.drawImage(img, 0, 0, outlineCanvas.width, outlineCanvas.height);
-                canvasLoader.classList.add('hidden');
-            };
-            img.src = encodedSvg;
+            if (currentDinoIndex === 0) {
+                // 티라노사우루스
+                ctxOutline.arc(cx - 20, cy - 40, 90, 0, Math.PI * 2);
+                ctxOutline.moveTo(cx - 110, cy - 40);
+                ctxOutline.lineTo(cx - 150, cy - 70);
+                ctxOutline.lineTo(cx - 110, cy - 10);
+            } else if (currentDinoIndex === 1) {
+                // 트리케라톱스
+                ctxOutline.arc(cx, cy, 110, 0, Math.PI * 2);
+                ctxOutline.moveTo(cx - 90, cy - 60);
+                ctxOutline.lineTo(cx - 150, cy - 100);
+            } else if (currentDinoIndex === 2) {
+                // 브라키오사우루스
+                ctxOutline.ellipse(cx, cy + 30, 100, 80, 0, 0, Math.PI * 2);
+                ctxOutline.moveTo(cx + 60, cy - 30);
+                ctxOutline.lineTo(cx + 120, cy - 150);
+            } else if (currentDinoIndex === 3) {
+                // 프테라노돈
+                ctxOutline.ellipse(cx, cy, 90, 70, 0, 0, Math.PI * 2);
+                ctxOutline.moveTo(cx - 90, cy);
+                ctxOutline.lineTo(cx - 180, cy - 30);
+            } else {
+                // 스테고사우루스
+                ctxOutline.roundRect(cx - 110, cy - 90, 220, 180, 50);
+            }
+            ctxOutline.stroke();
+            
+            // 눈 그리기
+            ctxOutline.fillStyle = '#1e293b';
+            ctxOutline.beginPath();
+            ctxOutline.arc(cx - 50, cy - 60, 10, 0, Math.PI * 2);
+            ctxOutline.fill();
         }
 
-        function resetColoring() {
-            colorCtx.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
-            colorCtx.fillStyle = "#FFFFFF";
-            colorCtx.fillRect(0, 0, colorCanvas.width, colorCanvas.height);
-        }
-
-        function getPos(e) {
+        // 그리기 이벤트 핸들러
+        function getTouchPos(e) {
             const rect = colorCanvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             return {
-                x: (e.clientX - rect.left) * (colorCanvas.width / rect.width),
-                y: (e.clientY - rect.top) * (colorCanvas.height / rect.height)
+                x: (clientX - rect.left) * (colorCanvas.width / rect.width),
+                y: (clientY - rect.top) * (colorCanvas.height / rect.height)
             };
         }
 
         function startDrawing(e) {
             isDrawing = true;
-            colorCtx.beginPath();
-            const pos = getPos(e);
-            colorCtx.moveTo(pos.x, pos.y);
-            draw(e);
+            const pos = getTouchPos(e);
+            ctxColor.beginPath();
+            ctxColor.moveTo(pos.x, pos.y);
         }
 
         function draw(e) {
             if (!isDrawing) return;
-            const pos = getPos(e);
-            colorCtx.lineWidth = brushSize;
-            colorCtx.lineCap = 'round';
-            colorCtx.lineJoin = 'round';
-            colorCtx.strokeStyle = (currentMode === 'eraser') ? '#FFFFFF' : currentColor;
-            colorCtx.lineTo(pos.x, pos.y);
-            colorCtx.stroke();
-            colorCtx.beginPath();
-            colorCtx.moveTo(pos.x, pos.y);
+            e.preventDefault();
+            const pos = getTouchPos(e);
+            ctxColor.lineTo(pos.x, pos.y);
+            ctxColor.strokeStyle = currentTool === 'eraser' ? '#ffffff' : currentColor;
+            ctxColor.lineWidth = brushSize;
+            ctxColor.lineCap = 'round';
+            ctxColor.lineJoin = 'round';
+            ctxColor.stroke();
         }
 
         function stopDrawing() {
-            if (isDrawing) {
-                isDrawing = false;
-                colorCtx.beginPath();
-                playSparkleSound();
+            isDrawing = false;
+        }
+
+        colorCanvas.addEventListener('mousedown', startDrawing);
+        colorCanvas.addEventListener('mousemove', draw);
+        window.addEventListener('mouseup', stopDrawing);
+
+        colorCanvas.addEventListener('touchstart', startDrawing, { passive: false });
+        colorCanvas.addEventListener('touchmove', draw, { passive: false });
+        window.addEventListener('touchend', stopDrawing);
+
+        // UI 컨트롤 이벤트
+        startGameBtn.addEventListener('click', () => {
+            homeScreen.classList.add('opacity-0', 'pointer-events-none');
+            initCanvasSize();
+        });
+
+        document.getElementById('mainHomeBtn').addEventListener('click', () => {
+            homeScreen.classList.remove('opacity-0', 'pointer-events-none');
+        });
+
+        // 색상 선택 버블
+        document.querySelectorAll('.color-bubble').forEach(bubble => {
+            bubble.addEventListener('click', (e) => {
+                document.querySelectorAll('.color-bubble').forEach(b => b.classList.remove('active', 'ring-4', 'ring-emerald-400'));
+                e.target.classList.add('active', 'ring-4', 'ring-emerald-400');
+                currentColor = e.target.getAttribute('data-color');
+                document.getElementById('selectedColorIndicator').style.backgroundColor = currentColor;
+                currentTool = 'brush';
+                updateToolUI();
+            });
+        });
+
+        // 도구 전환 (붓, 지우개, 리셋)
+        document.getElementById('toolBrush').addEventListener('click', () => {
+            currentTool = 'brush';
+            updateToolUI();
+        });
+        document.getElementById('toolEraser').addEventListener('click', () => {
+            currentTool = 'eraser';
+            updateToolUI();
+        });
+        document.getElementById('toolReset').addEventListener('click', () => {
+            if(confirm("색칠한 내용을 모두 지울까요?")) {
+                ctxColor.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+            }
+        });
+
+        function updateToolUI() {
+            const bBtn = document.getElementById('toolBrush');
+            const eBtn = document.getElementById('toolEraser');
+            if(currentTool === 'brush') {
+                bBtn.className = "tool-btn flex-1 py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-emerald-500 text-white shadow-md";
+                eBtn.className = "tool-btn flex-1 py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-slate-100 text-slate-600 hover:bg-slate-200";
+            } else {
+                eBtn.className = "tool-btn flex-1 py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-emerald-500 text-white shadow-md";
+                bBtn.className = "tool-btn flex-1 py-2.5 rounded-xl font-bold flex flex-col items-center gap-1 transition bg-slate-100 text-slate-600 hover:bg-slate-200";
             }
         }
 
-        function triggerAIInspection() {
-            aiOverlay.style.opacity = '1';
+        // 붓 사이즈 조절
+        document.getElementById('brushSizeRange').addEventListener('input', (e) => {
+            brushSize = e.target.value;
+        });
+
+        // 공룡 전환
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            currentDinoIndex = (currentDinoIndex + 1) % 5;
+            updateDinoInfo();
+        });
+        document.getElementById('prevBtn').addEventListener('click', () => {
+            currentDinoIndex = (currentDinoIndex - 4) % 5;
+            updateDinoInfo();
+        });
+
+        function updateDinoInfo() {
+            const t = TRANSLATIONS[currentLang];
+            document.getElementById('dinoName').textContent = t.dinoNames[currentDinoIndex];
+            ctxColor.clearRect(0, 0, colorCanvas.width, colorCanvas.height);
+            drawCurrentDinoOutline();
+        }
+
+        // 언어 토글
+        document.getElementById('langToggleBtn').addEventListener('click', toggleLanguage);
+        document.getElementById('homeLangBtn').addEventListener('click', toggleLanguage);
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ko' ? 'en' : 'ko';
+            const t = TRANSLATIONS[currentLang];
+            
+            document.getElementById('langFlag').textContent = currentLang === 'ko' ? '🇰🇷' : '🇺🇸';
+            document.getElementById('langLabel').textContent = currentLang === 'ko' ? '한국어' : 'English';
+            document.getElementById('homeLangFlag').textContent = currentLang === 'ko' ? '🇰🇷' : '🇺🇸';
+            document.getElementById('homeLangText').textContent = currentLang === 'ko' ? '한국어' : 'English';
+            
+            document.getElementById('appHeaderTitle').textContent = t.appHeaderTitle;
+            document.getElementById('startBtnText').textContent = t.startBtnText;
+            document.getElementById('homeSubtitle').textContent = t.homeSubtitle;
+            document.getElementById('prevBtnText').textContent = t.prevBtn;
+            document.getElementById('nextBtnText').textContent = t.nextBtn;
+            document.getElementById('btnBrushText').textContent = t.btnBrushText;
+            document.getElementById('btnEraserText').textContent = t.btnEraserText;
+            document.getElementById('btnResetText').textContent = t.btnResetText;
+            document.getElementById('btnCompleteText').textContent = t.btnCompleteText;
+            document.getElementById('brushSizeLabel').textContent = t.brushSizeLabel;
+            document.getElementById('voiceStatusText').textContent = t.voiceStatusText;
+            updateDinoInfo();
+        }
+
+        // 완료 버튼 및 리액션 애니메이션 연출
+        document.getElementById('toolComplete').addEventListener('click', () => {
+            const overlay = document.getElementById('reactionOverlay');
+            const emoji = document.getElementById('reactionEmoji');
+            const text = document.getElementById('reactionText');
+            
+            const reactions = [
+                { emoji: "🔥", text: "공룡이 신나서 불뿜기 발사! 뿜뿜~ 🔥", anim: "dino-fire" },
+                { emoji: "💨", text: "뿌우웅~ 방귀 대폭발 기가 막히죠? 😆", anim: "dino-burp" },
+                { emoji: "💃", text: "신나는 음악에 맞춰 댄스파티 시작! ✨", anim: "dino-dance" }
+            ];
+            const r = reactions[Math.floor(Math.random() * reactions.length)];
+            
+            emoji.textContent = r.emoji;
+            text.textContent = r.text;
+            
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('canvasContainer').classList.add(r.anim);
+            
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 120, spread: 90, origin: { y: 0.6 } });
+            }
+
             setTimeout(() => {
-                aiOverlay.style.opacity = '0';
-                const imgData = colorCtx.getImageData(0, 0, colorCanvas.width, colorCanvas.height).data;
-                let coloredPixels = 0, diverseColors = new Set();
-                
-                for (let i = 0; i < imgData.length; i += 4) {
-                    const r = imgData[i], g = imgData[i+1], b = imgData[i+2];
-                    if (r < 250 || g < 250 || b < 250) {
-                        coloredPixels++;
-                        diverseColors.add(`${Math.floor(r/50)},${Math.floor(g/50)},${Math.floor(b/50)}`);
-                    }
-                }
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                document.getElementById('canvasContainer').classList.remove('dino-fire', 'dino-burp', 'dino-dance');
+                showScoreModal(100);
+            }, 2000);
+        });
 
-                const fillRatio = coloredPixels / (imgData.length / 4);
-                const colorVariety = diverseColors.size;
-
-                let score = Math.floor(fillRatio * 80) + (colorVariety * 3) + 20;
-                if (score > 100) score = 100;
-                if (score < 40) score = 45;
-
-                lastScore = score;
-                showInspectionResult(score, fillRatio, colorVariety);
-            }, 1200);
-        }
-
-        function showInspectionResult(score, fillRatio, colorVariety) {
+        function showScoreModal(score) {
+            const t = TRANSLATIONS[currentLang];
             document.getElementById('scoreValue').textContent = `${score}점`;
-            
-            let completeness = fillRatio > 0.4 ? "매우 꼼꼼하게 채색됨 🌟" : "조금 더 채워보세요! 💪";
-            let harmony = colorVariety > 5 ? "다양한 색상 조화가 훌륭함 🎨" : "단색 위주의 깔끔한 스타일 ✨";
-            
-            document.getElementById('inspectionDetails').innerHTML = `
-                • 채색 면적 검수: ${(fillRatio * 100).toFixed(1)}% 채워짐<br>
-                • 디테일 및 완성도: ${completeness}<br>
-                • 컬러 다양성 평가: ${harmony}
-            `;
-
-            if (score >= 80) {
-                document.getElementById('modalEmoji').textContent = '🏆';
-                document.getElementById('praiseMessage').textContent = '"AI 검수관: 선 안쪽을 아주 멋지게 완성했습니다! 완벽한 걸작이에요."';
-                if (typeof confetti === 'function') confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-            } else {
-                document.getElementById('modalEmoji').textContent = '🐣';
-                document.getElementById('praiseMessage').textContent = '"AI 검수관: 빈 곳을 조금 더 채워넣으면 만점이 될 수 있어요!"';
-            }
-
-            scoreModal.classList.remove('opacity-0', 'pointer-events-none');
-            scoreModalCard.classList.remove('scale-90'); scoreModalCard.classList.add('scale-100');
+            document.getElementById('scoreModal').classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('scoreModalCard').classList.remove('scale-90');
+            document.getElementById('scoreModalCard').classList.add('scale-100');
         }
 
-        function closeModal() {
-            scoreModal.classList.add('opacity-0', 'pointer-events-none');
-            scoreModalCard.classList.remove('scale-100'); scoreModalCard.classList.add('scale-90');
+        function closeScoreModal() {
+            document.getElementById('scoreModal').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('scoreModalCard').classList.remove('scale-100');
+            document.getElementById('scoreModalCard').classList.add('scale-90');
         }
 
-        function saveCurrentScoreToRanking() {
-            const nameInput = document.getElementById('playerNameInput');
-            const name = nameInput.value.trim() || '꼬마 화가';
-            const dinoName = TRANSLATIONS[currentLang].dinoNames[currentDinoIndex];
-
-            let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
-            rankings.push({ name: name, score: lastScore, dino: dinoName, date: new Date().toLocaleDateString() });
-            rankings.sort((a, b) => b.score - a.score);
-            rankings = rankings.slice(0, 10);
-
-            localStorage.setItem('dino_rankings', JSON.stringify(rankings));
-            nameInput.value = '';
-            closeModal();
-            showRankingBoard();
-        }
-
-        function showRankingBoard() {
-            const rankingListContainer = document.getElementById('rankingListContainer');
-            rankingListContainer.innerHTML = '';
-            let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
-            
-            if (rankings.length === 0) {
-                rankingListContainer.innerHTML = '<div class="text-center py-4 text-slate-400 font-bold">아직 등록된 랭킹이 없어요!<br>AI 검수를 받고 이름을 올려보세요 🏆</div>';
-            } else {
-                rankings.forEach((item, index) => {
-                    const row = document.createElement('div');
-                    row.className = `flex justify-between items-center p-2 rounded-xl ${index === 0 ? 'bg-yellow-100 font-bold text-yellow-900 border border-yellow-300' : 'bg-amber-50/60'}`;
-                    row.innerHTML = `
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 text-center text-emerald-700 font-black">${index + 1}등</span>
-                            <span>${item.name} <span class="text-[10px] text-slate-500">(${item.dino})</span></span>
-                        </div>
-                        <span class="text-emerald-600 font-extrabold">${item.score}점</span>
-                    `;
-                    rankingListContainer.appendChild(row);
-                });
-            }
-
-            rankingModal.classList.remove('opacity-0', 'pointer-events-none');
+        function showRankingModal() {
+            renderRankingList();
+            document.getElementById('rankingModal').classList.remove('opacity-0', 'pointer-events-none');
             document.getElementById('rankingModalCard').classList.remove('scale-90');
             document.getElementById('rankingModalCard').classList.add('scale-100');
         }
 
-        function downloadCanvasImage() {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = 500; tempCanvas.height = 500;
-            const tCtx = tempCanvas.getContext('2d');
-            tCtx.fillStyle = '#FFFFFF';
-            tCtx.fillRect(0, 0, 500, 500);
-            tCtx.drawImage(colorCanvas, 0, 0);
-            tCtx.drawImage(outlineCanvas, 0, 0);
-
-            const link = document.createElement('a');
-            link.download = 'dino_coloring_result.png';
-            link.href = tempCanvas.toDataURL('image/png');
-            link.click();
+        function closeRankingModal() {
+            document.getElementById('rankingModal').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('rankingModalCard').classList.remove('scale-100');
+            document.getElementById('rankingModalCard').classList.add('scale-90');
         }
+
+        document.getElementById('openRankingHeaderBtn').addEventListener('click', showRankingModal);
+        document.getElementById('openRankingHomeBtn').addEventListener('click', showRankingModal);
+
+        function saveCurrentScoreToRanking() {
+            const nameInput = document.getElementById('playerNameInput');
+            const name = nameInput.value.trim() || '꼬마 화가';
+            const dinoName = TRANSLATIONS[currentLang].dinoNames[currentDinoIndex].split(' ')[1];
+            
+            let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
+            rankings.push({ name: name, score: lastScore, dino: dinoName, date: new Date().toLocaleDateString() });
+            rankings.sort((a, b) => b.score - a.score);
+            rankings = rankings.slice(0, 10);
+            
+            localStorage.setItem('dino_rankings', JSON.stringify(rankings));
+            nameInput.value = '';
+            closeScoreModal();
+            showRankingModal();
+        }
+
+        function renderRankingList() {
+            const container = document.getElementById('rankingListContainer');
+            container.innerHTML = '';
+            let rankings = JSON.parse(localStorage.getItem('dino_rankings') || '[]');
+            
+            if (rankings.length === 0) {
+                container.innerHTML = '<div class="text-center py-6 text-slate-400 font-bold">아직 등록된 랭킹이 없어요!<br>완료하고 이름을 올려보세요 🏆</div>';
+                return;
+            }
+            
+            rankings.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = `flex justify-between items-center p-2.5 rounded-xl ${index === 0 ? 'bg-yellow-100 font-bold text-yellow-900 border border-yellow-300' : 'bg-slate-50'}`;
+                row.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 text-center text-emerald-700 font-black">${index + 1}등</span>
+                        <span>${item.name} <span class="text-[10px] text-slate-500">(${item.dino})</span></span>
+                    </div>
+                    <span class="text-emerald-600 font-extrabold">${item.score}점</span>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        window.onload = initCanvasSize;
     </script>
 </body>
 </html>
