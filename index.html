@@ -102,9 +102,9 @@
             </div>
 
             <!-- 안내 문구 -->
-            <div class="w-full bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-1.5 border border-amber-300">
+            <div id="statusBanner" class="w-full bg-amber-100 text-amber-900 px-3 py-1.5 rounded-xl font-bold text-xs text-center flex items-center justify-center gap-1.5 border border-amber-300 transition-colors">
                 <i class="fa-solid fa-paintbrush text-emerald-600 animate-pulse"></i>
-                <span>마우스나 펜을 갖다 대기만 해도 슥슥 그려져요! ✨</span>
+                <span id="statusText">마우스나 펜을 움직이면 슥슥 그려져요! (멈추면 2.5초 휴식) ✨</span>
             </div>
 
             <!-- 컬러 팔레트 -->
@@ -195,27 +195,27 @@
             }
         }
 
-        // ✨ 찰랑거리는 부드러운 별소리
+        // ✨ 천천히 잔잔하게 울리는 별소리 (0.8초 간격, 부드러운 음색)
         let lastStarTime = 0;
-        function playStarSound() {
+        function playStarSound(force = false) {
             try {
                 const now = Date.now();
-                if (now - lastStarTime < 180) return;
+                if (!force && now - lastStarTime < 800) return; // 0.8초마다 천천히 재생
                 lastStarTime = now;
 
                 initAudio();
-                const notes = [587.33, 739.99, 880, 1174.66];
+                const notes = [587.33, 739.99, 880, 1174.66]; // D5, F#5, A5, D6
                 notes.forEach((freq, index) => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.05));
-                    gain.gain.setValueAtTime(0.06, audioCtx.currentTime + (index * 0.05));
-                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (index * 0.05) + 0.12);
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (index * 0.09));
+                    gain.gain.setValueAtTime(force ? 0.16 : 0.045, audioCtx.currentTime + (index * 0.09));
+                    gain.gain.exponentialRampToValueAtTime(0.0008, audioCtx.currentTime + (index * 0.09) + 0.28);
                     osc.connect(gain);
                     gain.connect(audioCtx.destination);
-                    osc.start(audioCtx.currentTime + (index * 0.05));
-                    osc.stop(audioCtx.currentTime + (index * 0.05) + 0.12);
+                    osc.start(audioCtx.currentTime + (index * 0.09));
+                    osc.stop(audioCtx.currentTime + (index * 0.09) + 0.28);
                 });
             } catch(e) {}
         }
@@ -327,337 +327,432 @@
             drawCurrentDinoAndBackground();
         }
 
-        // 🦖 귀여운 유아용 색칠놀이 도안 그리기 함수
+        // 🦖 시판 컬러링북 수준의 디테일한 유아용 공룡 도안 그리기
         function drawCurrentDinoAndBackground() {
             ctxOutline.clearRect(0, 0, outlineCanvas.width, outlineCanvas.height);
             ctxOutline.strokeStyle = '#1e293b';
             ctxOutline.fillStyle = '#1e293b';
-            ctxOutline.lineWidth = 5;
+            ctxOutline.lineWidth = 4.5;
             ctxOutline.lineCap = 'round';
             ctxOutline.lineJoin = 'round';
 
             if (currentDinoIndex === 0) {
                 // ==========================================
-                // 1. 티라노사우루스 (화산 배경)
+                // 1. 아기 티라노사우루스 (화산 & 쥐라기 배경)
                 // ==========================================
-                // [배경] 오른쪽 화산 & 분화구
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(330, 470);
-                ctxOutline.quadraticCurveTo(370, 350, 390, 260);
-                ctxOutline.lineTo(435, 260);
-                ctxOutline.quadraticCurveTo(455, 350, 490, 470);
-                // 화산 용암 지그재그
-                ctxOutline.moveTo(385, 285); ctxOutline.lineTo(400, 305); ctxOutline.lineTo(412, 285); ctxOutline.lineTo(425, 305); ctxOutline.lineTo(440, 285);
-                // 화산 연기 구름
-                ctxOutline.moveTo(412, 240); ctxOutline.arc(412, 225, 16, 0, Math.PI * 2);
-                ctxOutline.moveTo(435, 210); ctxOutline.arc(435, 195, 20, 0, Math.PI * 2);
+                ctxOutline.moveTo(335, 465);
+                ctxOutline.bezierCurveTo(365, 380, 380, 300, 392, 255);
+                ctxOutline.lineTo(432, 255);
+                ctxOutline.bezierCurveTo(445, 300, 460, 380, 488, 465);
+                ctxOutline.moveTo(388, 280);
+                ctxOutline.quadraticCurveTo(396, 305, 405, 285);
+                ctxOutline.quadraticCurveTo(412, 315, 420, 285);
+                ctxOutline.quadraticCurveTo(428, 305, 436, 280);
                 ctxOutline.stroke();
 
-                // [배경] 왼쪽 위 뭉게구름
-                drawCloud(ctxOutline, 95, 85, 0.85);
+                drawCloud(ctxOutline, 415, 200, 0.55);
+                drawCloud(ctxOutline, 445, 155, 0.7);
+                drawCloud(ctxOutline, 95, 75, 0.85);
 
-                // [공룡] 티라노사우루스 몸통 & 머리
+                drawFernBush(ctxOutline, 55, 465, 0.9);
+                drawFernBush(ctxOutline, 325, 465, 0.75);
+
                 ctxOutline.beginPath();
-                // 머리 윗선 -> 주둥이
-                ctxOutline.moveTo(195, 145);
-                ctxOutline.bezierCurveTo(220, 110, 315, 115, 325, 165);
-                // 윗턱 & 입 벌린 라인
-                ctxOutline.quadraticCurveTo(328, 190, 265, 192);
-                ctxOutline.lineTo(310, 212);
-                // 아랫턱 -> 목
-                ctxOutline.quadraticCurveTo(295, 232, 245, 225);
-                // 배 -> 앞다리(오른쪽)
-                ctxOutline.quadraticCurveTo(255, 275, 245, 330);
-                // 오른쪽 뒷다리
-                ctxOutline.lineTo(260, 415);
-                ctxOutline.quadraticCurveTo(275, 430, 230, 430);
-                ctxOutline.lineTo(215, 370);
-                // 가랑이 -> 왼쪽 뒷다리
-                ctxOutline.quadraticCurveTo(195, 375, 180, 370);
-                ctxOutline.lineTo(175, 430);
-                ctxOutline.quadraticCurveTo(130, 430, 145, 410);
-                ctxOutline.lineTo(155, 345);
-                // 긴 꼬리
-                ctxOutline.bezierCurveTo(95, 345, 45, 300, 35, 245);
-                ctxOutline.bezierCurveTo(75, 275, 120, 285, 155, 260);
-                // 등 라인
-                ctxOutline.quadraticCurveTo(165, 190, 195, 145);
+                ctxOutline.moveTo(190, 145);
+                ctxOutline.bezierCurveTo(215, 100, 315, 102, 330, 152);
+                ctxOutline.quadraticCurveTo(335, 182, 260, 188);
+                ctxOutline.quadraticCurveTo(285, 212, 315, 208);
+                ctxOutline.quadraticCurveTo(300, 232, 245, 224);
+                ctxOutline.bezierCurveTo(265, 265, 265, 315, 248, 345);
+                ctxOutline.lineTo(264, 412);
+                ctxOutline.bezierCurveTo(282, 418, 280, 436, 230, 436);
+                ctxOutline.lineTo(216, 376);
+                ctxOutline.quadraticCurveTo(195, 382, 178, 374);
+                ctxOutline.lineTo(172, 436);
+                ctxOutline.bezierCurveTo(125, 436, 125, 418, 144, 410);
+                ctxOutline.lineTo(155, 348);
+                ctxOutline.bezierCurveTo(95, 352, 42, 310, 35, 250);
+                ctxOutline.bezierCurveTo(75, 282, 122, 290, 155, 262);
+                ctxOutline.bezierCurveTo(158, 210, 170, 175, 190, 145);
                 ctxOutline.stroke();
 
-                // 티라노 앙증맞은 팔
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(245, 250);
-                ctxOutline.lineTo(280, 255);
-                ctxOutline.lineTo(275, 268);
-                ctxOutline.moveTo(280, 255);
-                ctxOutline.lineTo(285, 265);
+                ctxOutline.moveTo(238, 235);
+                ctxOutline.bezierCurveTo(250, 275, 248, 315, 230, 352);
+                ctxOutline.moveTo(240, 260); ctxOutline.lineTo(256, 260);
+                ctxOutline.moveTo(243, 285); ctxOutline.lineTo(260, 285);
+                ctxOutline.moveTo(240, 310); ctxOutline.lineTo(257, 310);
                 ctxOutline.stroke();
 
-                // 티라노 날카로운 이빨
+                drawBackSpikes(ctxOutline, [
+                    {x: 175, y: 175, a: -1.1},
+                    {x: 162, y: 215, a: -1.3},
+                    {x: 155, y: 255, a: -1.5},
+                    {x: 112, y: 282, a: -2.1}
+                ]);
+
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(280, 192); ctxOutline.lineTo(286, 202); ctxOutline.lineTo(292, 191);
-                ctxOutline.moveTo(302, 190); ctxOutline.lineTo(308, 200); ctxOutline.lineTo(314, 188);
+                ctxOutline.moveTo(252, 246);
+                ctxOutline.quadraticCurveTo(278, 244, 286, 256);
+                ctxOutline.lineTo(278, 264);
+                ctxOutline.moveTo(286, 256);
+                ctxOutline.lineTo(288, 268);
                 ctxOutline.stroke();
 
-                // 티라노 눈 & 콧구멍
-                drawCuteEye(ctxOutline, 240, 152);
                 ctxOutline.beginPath();
-                ctxOutline.arc(305, 155, 3, 0, Math.PI * 2);
+                ctxOutline.moveTo(275, 187); ctxOutline.lineTo(281, 198); ctxOutline.lineTo(287, 186);
+                ctxOutline.moveTo(294, 185); ctxOutline.lineTo(300, 196); ctxOutline.lineTo(306, 184);
+                ctxOutline.moveTo(312, 182); ctxOutline.lineTo(317, 192); ctxOutline.lineTo(322, 179);
+                ctxOutline.stroke();
+
+                drawClaws(ctxOutline, 256, 436, 2);
+                drawClaws(ctxOutline, 152, 436, 2);
+
+                drawBigAnimeEye(ctxOutline, 238, 146, 11);
+                ctxOutline.beginPath();
+                ctxOutline.arc(310, 146, 3.5, 0, Math.PI * 2);
                 ctxOutline.fill();
 
-                // 바닥 선
                 drawGroundLine(ctxOutline);
 
             } else if (currentDinoIndex === 1) {
                 // ==========================================
-                // 2. 트리케라톱스 (초원 배경)
+                // 2. 아기 트리케라톱스 (초원 & 잎사귀 나무 배경)
                 // ==========================================
-                // [배경] 오른쪽 큰 나무
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(405, 470); ctxOutline.lineTo(412, 320);
-                ctxOutline.moveTo(435, 470); ctxOutline.lineTo(428, 320);
+                ctxOutline.moveTo(405, 465); ctxOutline.quadraticCurveTo(412, 380, 410, 315);
+                ctxOutline.moveTo(438, 465); ctxOutline.quadraticCurveTo(431, 380, 433, 315);
                 ctxOutline.stroke();
-                ctxOutline.beginPath();
-                ctxOutline.arc(420, 270, 55, 0, Math.PI * 2);
-                ctxOutline.stroke();
+                drawCloud(ctxOutline, 422, 265, 1.35);
+                drawCloud(ctxOutline, 100, 75, 0.9);
+                drawFernBush(ctxOutline, 58, 465, 0.95);
+                drawFernBush(ctxOutline, 355, 465, 0.8);
 
-                // [배경] 구름
-                drawCloud(ctxOutline, 110, 80, 0.9);
-
-                // [공룡] 트리케라톱스 프릴(목장식)
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(210, 180);
-                ctxOutline.bezierCurveTo(175, 115, 265, 105, 275, 175);
+                ctxOutline.moveTo(205, 182);
+                ctxOutline.bezierCurveTo(165, 105, 265, 92, 276, 172);
                 ctxOutline.stroke();
 
-                // 코 위 뿔 & 이마 뿔
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(270, 165); ctxOutline.lineTo(325, 135); ctxOutline.lineTo(280, 185);
-                ctxOutline.moveTo(320, 215); ctxOutline.lineTo(348, 195); ctxOutline.lineTo(332, 230);
+                ctxOutline.arc(205, 148, 9, 0, Math.PI * 2);
+                ctxOutline.moveTo(234, 134); ctxOutline.arc(225, 134, 9, 0, Math.PI * 2);
+                ctxOutline.moveTo(256, 148); ctxOutline.arc(247, 148, 9, 0, Math.PI * 2);
                 ctxOutline.stroke();
 
-                // 머리 & 몸통 & 다리
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(275, 175);
-                // 주둥이(부리)
-                ctxOutline.quadraticCurveTo(345, 200, 340, 245);
-                ctxOutline.quadraticCurveTo(320, 268, 275, 260);
-                // 가슴 -> 앞다리
-                ctxOutline.lineTo(275, 360);
-                ctxOutline.quadraticCurveTo(275, 375, 240, 375);
-                ctxOutline.lineTo(235, 325);
-                // 배
-                ctxOutline.quadraticCurveTo(190, 330, 155, 325);
-                // 뒷다리
-                ctxOutline.lineTo(150, 375);
-                ctxOutline.quadraticCurveTo(115, 375, 115, 360);
-                ctxOutline.lineTo(115, 295);
-                // 꼬리
-                ctxOutline.quadraticCurveTo(60, 290, 45, 260);
-                ctxOutline.quadraticCurveTo(75, 245, 110, 240);
-                // 등 곡선
-                ctxOutline.bezierCurveTo(130, 185, 180, 175, 210, 180);
+                ctxOutline.moveTo(265, 162); ctxOutline.quadraticCurveTo(305, 135, 332, 128); ctxOutline.quadraticCurveTo(308, 158, 278, 180);
+                ctxOutline.moveTo(255, 152); ctxOutline.quadraticCurveTo(285, 125, 308, 120);
+                ctxOutline.moveTo(324, 212); ctxOutline.quadraticCurveTo(345, 192, 356, 190); ctxOutline.quadraticCurveTo(348, 214, 336, 226);
                 ctxOutline.stroke();
 
-                // 귀여운 눈 & 미소
-                drawCuteEye(ctxOutline, 280, 205);
                 ctxOutline.beginPath();
-                ctxOutline.arc(305, 238, 12, 0.2, Math.PI * 0.8);
+                ctxOutline.moveTo(276, 172);
+                ctxOutline.quadraticCurveTo(348, 196, 345, 245);
+                ctxOutline.quadraticCurveTo(325, 272, 276, 262);
+                ctxOutline.lineTo(278, 368);
+                ctxOutline.bezierCurveTo(282, 382, 240, 382, 242, 368);
+                ctxOutline.lineTo(238, 326);
+                ctxOutline.moveTo(240, 355);
+                ctxOutline.lineTo(222, 365);
+                ctxOutline.bezierCurveTo(210, 372, 210, 355, 225, 340);
+                ctxOutline.moveTo(238, 326);
+                ctxOutline.quadraticCurveTo(192, 335, 154, 326);
+                ctxOutline.lineTo(150, 368);
+                ctxOutline.bezierCurveTo(152, 382, 110, 382, 114, 368);
+                ctxOutline.lineTo(116, 296);
+                ctxOutline.bezierCurveTo(65, 296, 40, 270, 38, 250);
+                ctxOutline.bezierCurveTo(68, 248, 95, 245, 114, 236);
+                ctxOutline.bezierCurveTo(132, 182, 180, 172, 205, 182);
                 ctxOutline.stroke();
 
-                // 바닥 선 & 풀숲
+                ctxOutline.beginPath();
+                ctxOutline.arc(155, 215, 10, 0, Math.PI * 2);
+                ctxOutline.moveTo(192, 205); ctxOutline.arc(184, 205, 8, 0, Math.PI * 2);
+                ctxOutline.moveTo(142, 245); ctxOutline.arc(135, 245, 7, 0, Math.PI * 2);
+                ctxOutline.stroke();
+
+                drawClaws(ctxOutline, 266, 378, 2);
+                drawClaws(ctxOutline, 138, 378, 2);
+
+                drawBigAnimeEye(ctxOutline, 282, 204, 11);
+                ctxOutline.beginPath();
+                ctxOutline.ellipse(306, 224, 8, 5, 0, 0, Math.PI * 2);
+                ctxOutline.stroke();
+                ctxOutline.beginPath();
+                ctxOutline.arc(312, 240, 12, 0.2, Math.PI * 0.85);
+                ctxOutline.stroke();
+
                 drawGroundLine(ctxOutline);
 
             } else if (currentDinoIndex === 2) {
                 // ==========================================
-                // 3. 브라키오사우루스 (산과 태양 배경)
+                // 3. 아기 브라키오사우루스 (산과 태양 배경)
                 // ==========================================
-                // [배경] 왼쪽 산봉우리 & 오른쪽 태양
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(20, 470); ctxOutline.lineTo(100, 280); ctxOutline.lineTo(175, 470);
-                ctxOutline.moveTo(110, 470); ctxOutline.lineTo(175, 320); ctxOutline.lineTo(240, 470);
+                ctxOutline.moveTo(18, 465); ctxOutline.lineTo(98, 265); ctxOutline.lineTo(175, 465);
+                ctxOutline.moveTo(74, 325); ctxOutline.lineTo(90, 338); ctxOutline.lineTo(102, 324); ctxOutline.lineTo(116, 336);
+                ctxOutline.moveTo(115, 465); ctxOutline.lineTo(178, 310); ctxOutline.lineTo(242, 465);
                 ctxOutline.stroke();
 
-                // 반짝이는 태양
                 ctxOutline.beginPath();
-                ctxOutline.arc(415, 85, 32, 0, Math.PI * 2);
+                ctxOutline.arc(415, 85, 30, 0, Math.PI * 2);
                 ctxOutline.stroke();
                 for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
                     ctxOutline.beginPath();
-                    ctxOutline.moveTo(415 + Math.cos(a) * 40, 85 + Math.sin(a) * 40);
-                    ctxOutline.lineTo(415 + Math.cos(a) * 52, 85 + Math.sin(a) * 52);
+                    ctxOutline.moveTo(415 + Math.cos(a) * 38, 85 + Math.sin(a) * 38);
+                    ctxOutline.lineTo(415 + Math.cos(a) * 50, 85 + Math.sin(a) * 50);
                     ctxOutline.stroke();
                 }
+                drawCloud(ctxOutline, 120, 75, 0.85);
+                drawFernBush(ctxOutline, 420, 465, 0.9);
 
-                // [공룡] 긴 목 브라키오사우루스
                 ctxOutline.beginPath();
-                // 머리 윗부분 (특징적인 둥근 혹)
-                ctxOutline.moveTo(295, 105);
-                ctxOutline.bezierCurveTo(310, 75, 355, 80, 365, 115);
-                // 주둥이
-                ctxOutline.quadraticCurveTo(385, 130, 360, 148);
-                ctxOutline.lineTo(325, 148);
-                // 긴 목 앞선 -> 가슴
-                ctxOutline.quadraticCurveTo(315, 230, 335, 285);
-                // 앞다리 (길쭉함)
-                ctxOutline.lineTo(335, 425);
-                ctxOutline.quadraticCurveTo(335, 440, 300, 440);
-                ctxOutline.lineTo(295, 355);
-                // 배
-                ctxOutline.quadraticCurveTo(245, 365, 200, 355);
-                // 뒷다리
-                ctxOutline.lineTo(195, 440);
-                ctxOutline.quadraticCurveTo(160, 440, 160, 425);
-                ctxOutline.lineTo(160, 330);
-                // 긴 꼬리
-                ctxOutline.bezierCurveTo(95, 335, 55, 300, 45, 265);
-                ctxOutline.bezierCurveTo(85, 285, 125, 285, 165, 265);
-                // 등 -> 긴 목 뒷선
-                ctxOutline.bezierCurveTo(215, 245, 275, 195, 295, 105);
+                ctxOutline.moveTo(292, 108);
+                ctxOutline.bezierCurveTo(306, 70, 354, 72, 366, 112);
+                ctxOutline.quadraticCurveTo(388, 128, 362, 148);
+                ctxOutline.lineTo(324, 148);
+                ctxOutline.bezierCurveTo(312, 210, 325, 255, 340, 290);
+                ctxOutline.lineTo(340, 428);
+                ctxOutline.bezierCurveTo(342, 444, 298, 444, 300, 428);
+                ctxOutline.lineTo(296, 355);
+                ctxOutline.quadraticCurveTo(248, 368, 200, 355);
+                ctxOutline.lineTo(196, 428);
+                ctxOutline.bezierCurveTo(198, 444, 156, 444, 158, 428);
+                ctxOutline.lineTo(158, 332);
+                ctxOutline.bezierCurveTo(95, 342, 42, 305, 36, 262);
+                ctxOutline.bezierCurveTo(75, 286, 122, 288, 162, 265);
+                ctxOutline.bezierCurveTo(218, 245, 275, 195, 292, 108);
                 ctxOutline.stroke();
 
-                // 눈 & 미소
-                drawCuteEye(ctxOutline, 335, 112);
+                const spots = [
+                    {x: 304, y: 175, r: 7},
+                    {x: 295, y: 215, r: 9},
+                    {x: 265, y: 265, r: 11},
+                    {x: 225, y: 280, r: 12},
+                    {x: 185, y: 285, r: 9}
+                ];
+                spots.forEach(s => {
+                    ctxOutline.beginPath();
+                    ctxOutline.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctxOutline.stroke();
+                });
+
+                drawClaws(ctxOutline, 326, 442, 2);
+                drawClaws(ctxOutline, 184, 442, 2);
+
+                drawBigAnimeEye(ctxOutline, 336, 110, 10);
                 ctxOutline.beginPath();
-                ctxOutline.arc(352, 132, 10, 0.1, Math.PI * 0.85);
+                ctxOutline.arc(354, 132, 10, 0.1, Math.PI * 0.85);
                 ctxOutline.stroke();
 
                 drawGroundLine(ctxOutline);
 
             } else if (currentDinoIndex === 3) {
                 // ==========================================
-                // 4. 프테라노돈 (바다 배경)
+                // 4. 아기 프테라노돈 (바다 & 섬 배경)
                 // ==========================================
-                // [배경] 구름 & 갈매기
-                drawCloud(ctxOutline, 95, 75, 0.8);
-                drawCloud(ctxOutline, 405, 95, 0.75);
+                drawCloud(ctxOutline, 95, 70, 0.85);
+                drawCloud(ctxOutline, 405, 85, 0.8);
 
-                // [배경] 하단 바다 파도 2줄
+                ctxOutline.beginPath();
+                ctxOutline.arc(425, 415, 48, Math.PI, 0);
+                ctxOutline.moveTo(422, 368); ctxOutline.quadraticCurveTo(415, 330, 425, 305);
+                ctxOutline.moveTo(425, 305); ctxOutline.quadraticCurveTo(400, 295, 388, 315);
+                ctxOutline.moveTo(425, 305); ctxOutline.quadraticCurveTo(450, 295, 462, 315);
+                ctxOutline.moveTo(425, 305); ctxOutline.quadraticCurveTo(410, 282, 398, 290);
+                ctxOutline.moveTo(425, 305); ctxOutline.quadraticCurveTo(440, 282, 452, 290);
+                ctxOutline.stroke();
+
                 ctxOutline.beginPath();
                 for (let x = 20; x <= 440; x += 60) {
-                    ctxOutline.moveTo(x, 425);
-                    ctxOutline.quadraticCurveTo(x + 30, 400, x + 60, 425);
-                    ctxOutline.moveTo(x + 15, 455);
-                    ctxOutline.quadraticCurveTo(x + 45, 430, x + 75, 455);
+                    ctxOutline.moveTo(x, 420);
+                    ctxOutline.quadraticCurveTo(x + 30, 396, x + 60, 420);
+                    ctxOutline.moveTo(x + 15, 452);
+                    ctxOutline.quadraticCurveTo(x + 45, 428, x + 75, 452);
                 }
                 ctxOutline.stroke();
 
-                // [공룡] 하늘을 나는 프테라노돈
                 ctxOutline.beginPath();
-                // 머리 뒤 뾰족한 볏
-                ctxOutline.moveTo(220, 190);
-                ctxOutline.lineTo(135, 155);
-                ctxOutline.lineTo(210, 225);
-                // 긴 부리
-                ctxOutline.lineTo(355, 235);
-                ctxOutline.lineTo(245, 255);
+                ctxOutline.moveTo(222, 185);
+                ctxOutline.quadraticCurveTo(165, 162, 128, 152);
+                ctxOutline.quadraticCurveTo(165, 195, 206, 222);
                 ctxOutline.stroke();
 
-                // 몸통
                 ctxOutline.beginPath();
-                ctxOutline.ellipse(225, 275, 32, 48, -0.2, 0, Math.PI * 2);
+                ctxOutline.moveTo(222, 185);
+                ctxOutline.quadraticCurveTo(255, 182, 266, 210);
+                ctxOutline.lineTo(362, 228);
+                ctxOutline.quadraticCurveTo(368, 236, 358, 242);
+                ctxOutline.lineTo(254, 248);
                 ctxOutline.stroke();
 
-                // 왼쪽 커다란 날개
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(195, 255);
-                ctxOutline.bezierCurveTo(120, 185, 55, 215, 40, 275);
-                ctxOutline.quadraticCurveTo(100, 270, 130, 295);
-                ctxOutline.quadraticCurveTo(165, 285, 198, 295);
+                ctxOutline.moveTo(268, 232); ctxOutline.lineTo(340, 235);
                 ctxOutline.stroke();
 
-                // 오른쪽 커다란 날개
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(255, 260);
-                ctxOutline.bezierCurveTo(335, 195, 415, 215, 455, 275);
-                ctxOutline.quadraticCurveTo(395, 275, 365, 300);
-                ctxOutline.quadraticCurveTo(310, 290, 255, 300);
+                ctxOutline.ellipse(226, 276, 34, 48, -0.15, 0, Math.PI * 2);
                 ctxOutline.stroke();
 
-                // 귀여운 발 2개
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(210, 320); ctxOutline.lineTo(200, 345);
-                ctxOutline.moveTo(235, 322); ctxOutline.lineTo(240, 348);
+                ctxOutline.moveTo(195, 252);
+                ctxOutline.bezierCurveTo(118, 175, 48, 205, 34, 272);
+                ctxOutline.quadraticCurveTo(85, 265, 115, 290);
+                ctxOutline.quadraticCurveTo(155, 278, 196, 292);
+                ctxOutline.moveTo(194, 262); ctxOutline.quadraticCurveTo(125, 222, 72, 258);
                 ctxOutline.stroke();
 
-                drawCuteEye(ctxOutline, 240, 215);
+                ctxOutline.beginPath();
+                ctxOutline.moveTo(258, 256);
+                ctxOutline.bezierCurveTo(338, 185, 418, 205, 462, 272);
+                ctxOutline.quadraticCurveTo(405, 268, 372, 295);
+                ctxOutline.quadraticCurveTo(315, 282, 258, 296);
+                ctxOutline.moveTo(258, 266); ctxOutline.quadraticCurveTo(332, 225, 418, 260);
+                ctxOutline.stroke();
+
+                ctxOutline.beginPath();
+                ctxOutline.moveTo(212, 322); ctxOutline.lineTo(202, 348); ctxOutline.lineTo(192, 346);
+                ctxOutline.moveTo(202, 348); ctxOutline.lineTo(208, 354);
+                ctxOutline.moveTo(236, 324); ctxOutline.lineTo(242, 350); ctxOutline.lineTo(234, 356);
+                ctxOutline.moveTo(242, 350); ctxOutline.lineTo(252, 348);
+                ctxOutline.stroke();
+
+                drawBigAnimeEye(ctxOutline, 242, 210, 10);
 
             } else {
                 // ==========================================
-                // 5. 스테고사우루스 (숲 배경)
+                // 5. 아기 스테고사우루스 (숲 & 바위 배경)
                 // ==========================================
-                // [배경] 왼쪽 침엽수 숲 나무 & 구름
                 ctxOutline.beginPath();
-                ctxOutline.moveTo(75, 470); ctxOutline.lineTo(75, 390);
-                ctxOutline.moveTo(30, 390); ctxOutline.lineTo(75, 310); ctxOutline.lineTo(120, 390); ctxOutline.closePath();
-                ctxOutline.moveTo(40, 330); ctxOutline.lineTo(75, 260); ctxOutline.lineTo(110, 330); ctxOutline.closePath();
+                ctxOutline.moveTo(72, 465); ctxOutline.lineTo(72, 390);
+                ctxOutline.moveTo(26, 390); ctxOutline.lineTo(72, 305); ctxOutline.lineTo(118, 390); ctxOutline.closePath();
+                ctxOutline.moveTo(36, 328); ctxOutline.lineTo(72, 250); ctxOutline.lineTo(108, 328); ctxOutline.closePath();
                 ctxOutline.stroke();
 
-                drawCloud(ctxOutline, 395, 80, 0.85);
-
-                // [공룡] 스테고사우루스 몸통 & 작은 머리
                 ctxOutline.beginPath();
-                // 작은 머리 (오른쪽 방향)
-                ctxOutline.moveTo(355, 280);
-                ctxOutline.bezierCurveTo(385, 265, 425, 280, 420, 310);
-                ctxOutline.quadraticCurveTo(400, 328, 355, 320);
-                // 앞다리
-                ctxOutline.lineTo(345, 415);
-                ctxOutline.quadraticCurveTo(345, 430, 310, 430);
-                ctxOutline.lineTo(305, 365);
-                // 배
-                ctxOutline.quadraticCurveTo(255, 375, 210, 365);
-                // 뒷다리
-                ctxOutline.lineTo(205, 430);
-                ctxOutline.quadraticCurveTo(170, 430, 170, 415);
-                ctxOutline.lineTo(170, 345);
-                // 꼬리 & 꼬리 끝 가시 2쌍
-                ctxOutline.quadraticCurveTo(105, 345, 75, 315);
-                ctxOutline.lineTo(50, 295); ctxOutline.lineTo(82, 305);
-                ctxOutline.lineTo(65, 275); ctxOutline.lineTo(98, 295);
-                // 둥글게 솟은 등 라인
-                ctxOutline.bezierCurveTo(155, 215, 285, 215, 355, 280);
+                ctxOutline.arc(432, 465, 36, Math.PI, 0);
+                ctxOutline.moveTo(372, 465); ctxOutline.arc(394, 465, 22, Math.PI, 0);
                 ctxOutline.stroke();
 
-                // 등에 솟아난 다이아몬드 모양 골판 5개
+                drawCloud(ctxOutline, 395, 78, 0.85);
+
+                ctxOutline.beginPath();
+                ctxOutline.moveTo(356, 278);
+                ctxOutline.bezierCurveTo(388, 260, 430, 276, 424, 310);
+                ctxOutline.quadraticCurveTo(404, 330, 356, 322);
+                ctxOutline.lineTo(348, 422);
+                ctxOutline.bezierCurveTo(350, 436, 308, 436, 310, 422);
+                ctxOutline.lineTo(306, 366);
+                ctxOutline.quadraticCurveTo(255, 378, 208, 366);
+                ctxOutline.lineTo(204, 422);
+                ctxOutline.bezierCurveTo(206, 436, 166, 436, 168, 422);
+                ctxOutline.lineTo(168, 346);
+                ctxOutline.quadraticCurveTo(102, 348, 68, 315);
+                ctxOutline.lineTo(42, 292); ctxOutline.lineTo(76, 302);
+                ctxOutline.lineTo(58, 270); ctxOutline.lineTo(94, 292);
+                ctxOutline.bezierCurveTo(155, 210, 288, 210, 356, 278);
+                ctxOutline.stroke();
+
                 const plates = [
-                    { x: 145, y: 268, angle: -0.45 },
-                    { x: 185, y: 238, angle: -0.2 },
-                    { x: 235, y: 226, angle: 0 },
-                    { x: 285, y: 236, angle: 0.2 },
-                    { x: 325, y: 258, angle: 0.45 }
+                    { x: 138, y: 272, s: 0.85, angle: -0.52 },
+                    { x: 178, y: 240, s: 1.0,  angle: -0.25 },
+                    { x: 226, y: 226, s: 1.15, angle: -0.04 },
+                    { x: 276, y: 232, s: 1.05, angle: 0.18 },
+                    { x: 320, y: 254, s: 0.9,  angle: 0.42 }
                 ];
                 plates.forEach(p => {
                     ctxOutline.save();
                     ctxOutline.translate(p.x, p.y);
                     ctxOutline.rotate(p.angle);
+                    ctxOutline.scale(p.s, p.s);
                     ctxOutline.beginPath();
-                    ctxOutline.moveTo(-14, 0);
-                    ctxOutline.lineTo(0, -34);
-                    ctxOutline.lineTo(14, 0);
+                    ctxOutline.moveTo(-16, 0);
+                    ctxOutline.quadraticCurveTo(-18, -22, 0, -40);
+                    ctxOutline.quadraticCurveTo(18, -22, 16, 0);
+                    ctxOutline.moveTo(0, -6);
+                    ctxOutline.lineTo(0, -28);
                     ctxOutline.stroke();
                     ctxOutline.restore();
                 });
 
-                drawCuteEye(ctxOutline, 392, 290);
+                ctxOutline.beginPath();
+                ctxOutline.arc(235, 295, 11, 0, Math.PI * 2);
+                ctxOutline.moveTo(278, 305); ctxOutline.arc(270, 305, 8, 0, Math.PI * 2);
+                ctxOutline.moveTo(205, 315); ctxOutline.arc(198, 315, 8, 0, Math.PI * 2);
+                ctxOutline.stroke();
+
+                drawClaws(ctxOutline, 336, 434, 2);
+                drawClaws(ctxOutline, 192, 434, 2);
+
+                drawBigAnimeEye(ctxOutline, 394, 288, 9);
+                ctxOutline.beginPath();
+                ctxOutline.arc(408, 308, 8, 0.2, Math.PI * 0.85);
+                ctxOutline.stroke();
+
                 drawGroundLine(ctxOutline);
             }
         }
 
-        // 보조 그리기 함수: 귀여운 눈
-        function drawCuteEye(ctx, x, y) {
-            ctx.beginPath();
-            ctx.arc(x, y, 7, 0, Math.PI * 2);
-            ctx.fill();
+        function drawBigAnimeEye(ctx, x, y, r) {
             ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fillStyle = '#1e293b';
+            ctx.fill();
+
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.arc(x - 2, y - 2, 2.5, 0, Math.PI * 2);
+            ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.36, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(x + r * 0.28, y + r * 0.28, r * 0.18, 0, Math.PI * 2);
             ctx.fill();
             ctx.restore();
         }
 
-        // 보조 그리기 함수: 뭉게구름
+        function drawClaws(ctx, x, y, count) {
+            ctx.save();
+            ctx.beginPath();
+            for (let i = 0; i < count; i++) {
+                const cx = x + (i * 11);
+                ctx.moveTo(cx, y);
+                ctx.arc(cx + 4, y, 4, Math.PI, 0);
+            }
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawBackSpikes(ctx, list) {
+            list.forEach(item => {
+                ctx.save();
+                ctx.translate(item.x, item.y);
+                ctx.rotate(item.a);
+                ctx.beginPath();
+                ctx.moveTo(-8, 0);
+                ctx.lineTo(0, -16);
+                ctx.lineTo(8, 0);
+                ctx.stroke();
+                ctx.restore();
+            });
+        }
+
+        function drawFernBush(ctx, x, y, scale) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.beginPath();
+            ctx.moveTo(-26, 0);
+            ctx.quadraticCurveTo(-32, -22, -14, -26);
+            ctx.quadraticCurveTo(-8, -42, 6, -34);
+            ctx.quadraticCurveTo(24, -40, 22, -20);
+            ctx.quadraticCurveTo(36, -15, 28, 0);
+            ctx.closePath();
+            ctx.stroke();
+            ctx.restore();
+        }
+
         function drawCloud(ctx, x, y, scale) {
             ctx.save();
             ctx.translate(x, y);
@@ -671,11 +766,10 @@
             ctx.restore();
         }
 
-        // 보조 그리기 함수: 바닥선
         function drawGroundLine(ctx) {
             ctx.beginPath();
-            ctx.moveTo(20, 470);
-            ctx.lineTo(480, 470);
+            ctx.moveTo(15, 465);
+            ctx.lineTo(485, 465);
             ctx.stroke();
         }
 
@@ -689,12 +783,37 @@
             };
         }
 
-        // 🖱️ 펜이나 마우스를 누르지 않고 갖다 대기만 해도 그려지는 로직
+        // 🖱️ 움직임 감지 및 멈춤 시 2.5초 휴식(쿨타임) 제어 로직
         let lastX = null;
         let lastY = null;
+        let stopTimer = null;
+        let isPaused = false;
+        let resumeTimer = null;
+
+        const statusBanner = document.getElementById('statusBanner');
+        const statusText = document.getElementById('statusText');
+
+        function setPausedState(paused) {
+            isPaused = paused;
+            lastX = null;
+            lastY = null;
+            if (paused) {
+                statusBanner.classList.remove('bg-amber-100', 'text-amber-900', 'border-amber-300');
+                statusBanner.classList.add('bg-slate-200', 'text-slate-600', 'border-slate-300');
+                statusText.innerText = '잠깐 휴식 중! 2.5초 뒤 다시 칠해져요 ⏸️';
+            } else {
+                statusBanner.classList.remove('bg-slate-200', 'text-slate-600', 'border-slate-300');
+                statusBanner.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+                statusText.innerText = '마우스나 펜을 움직이면 슥슥 그려져요! (멈추면 2.5초 휴식) ✨';
+            }
+        }
 
         function handleMove(e) {
             e.preventDefault();
+
+            // 2.5초 휴식 시간 중에는 그리지 않음
+            if (isPaused) return;
+
             const pos = getTouchPos(e);
 
             ctxColor.beginPath();
@@ -713,10 +832,21 @@
             lastX = pos.x;
             lastY = pos.y;
 
-            playStarSound();
+            playStarSound(false);
+
+            // 움직임이 0.25초 동안 없으면 멈춘 것으로 간주 -> 2.5초 휴식 돌입
+            clearTimeout(stopTimer);
+            stopTimer = setTimeout(() => {
+                setPausedState(true);
+                clearTimeout(resumeTimer);
+                resumeTimer = setTimeout(() => {
+                    setPausedState(false);
+                }, 2500);
+            }, 250);
         }
 
         function resetPosition() {
+            clearTimeout(stopTimer);
             lastX = null;
             lastY = null;
         }
@@ -736,6 +866,11 @@
                 currentColor = e.target.getAttribute('data-color');
                 document.getElementById('selectedColorIndicator').style.backgroundColor = currentColor;
                 currentTool = 'brush';
+
+                // 색상을 새로 고르면 바로 칠할 수 있도록 휴식 즉시 해제
+                clearTimeout(stopTimer);
+                clearTimeout(resumeTimer);
+                setPausedState(false);
             });
         });
 
@@ -795,7 +930,7 @@
             }
 
             if (score === 50) {
-                playStarSound();
+                playStarSound(true);
             }
 
             document.getElementById('scoreValue').innerText = score + "점";
